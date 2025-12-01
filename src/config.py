@@ -10,6 +10,9 @@ import yaml
 class ProjectConfig:
     """Main configuration object for the project."""
     
+    # Project metadata
+    project_name: str = "manifold-bends"
+    
     # Model configurations
     embedding_model: str = "text-embedding-3-large"
     generation_model: str = "gpt-4o-mini"
