@@ -12,6 +12,7 @@ class ProjectConfig:
     
     # Project metadata
     project_name: str = "manifold-bends"
+    log_level: str = "INFO"
     
     # Model configurations
     embedding_model: str = "text-embedding-3-large"
