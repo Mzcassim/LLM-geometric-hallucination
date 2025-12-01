@@ -1,0 +1,111 @@
+# V2 Configuration for Enhanced Experiments
+
+# Project settings
+project_name: "manifold-bends-v2"
+seed: 42
+log_level: "INFO"
+
+# Benchmark settings
+benchmark:
+  prompts_per_category: 120  # Total will be lower due to combinatorics
+  categories:
+    - "factual"
+    - "nonexistent"
+    - "impossible"
+    - "ambiguous"
+
+# Generation settings - Multi-model support
+generation:
+  models:
+    - name: "gpt-4o-mini"
+      temperature: 0.7
+      max_tokens: 500
+      samples_per_prompt: 3  # Generate 3 responses per prompt
+    # Optional: add second model
+    # - name: "gpt-4o"
+    #   temperature: 0.7
+    #   max_tokens: 500
+    #   samples_per_prompt: 3
+
+# Judging settings - Dual judge for robustness
+judging:
+  judges:
+    - model: "gpt-4o-mini"
+      variant: "strict"
+      name: "judge_1"
+    - model: "gpt-4o-mini"
+      variant: "conservative"
+      name: "judge_2"
+  agreement_threshold: 1  # Judges can differ by max 1 severity level
+
+# Embedding settings
+embedding:
+  model: "text-embedding-3-large"
+  batch_size: 100
+  
+# Reference corpus settings
+reference_corpus:
+  size: 10000
+  pca_components: 50
+  build_from_benchmark: true  # Use benchmark questions as reference
+
+# Geometry settings - Enhanced features
+geometry:
+  k_neighbors: 20
+  metrics:
+    - "local_id"  # TwoNN intrinsic dimension
+    - "curvature"  # PCA residual variance
+    - "oppositeness"  # Sign-flip distance
+    - "density"  # NEW: Local density
+    - "centrality"  # NEW: Distance to center
+  oppositeness:
+    n_components: 3  # PCA components to flip
+  density:
+    k: 20  # Neighbors for density estimation
+    metric: "cosine"
+  centrality:
+    metric: "cosine"
+
+# Prediction settings
+prediction:
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  models:
+    - "logistic"
+    - "random_forest"
+  cv_folds: 5
+  feature_sets:
+    - name: "category_only"
+      features: ["category"]
+    - name: "geometry_only"
+      features: ["local_id", "curvature_score", "oppositeness_score", "density", "centrality"]
+    - name: "combined"
+      features: ["category", "local_id", "curvature_score", "oppositeness_score", "density", "centrality"]
+
+# Early warning settings
+early_warning:
+  risk_thresholds: [0.3, 0.4, 0.5]  # Flag top X%
+  mitigation:
+    enabled: true
+    conservative_system_prompt: |
+      You are a helpful assistant. If you are unsure about any facts or don't know the answer,
+      explicitly say "I don't know" or "I'm not certain" rather than making up information.
+      Only provide information you are confident is accurate.
+
+# API settings
+api:
+  max_retries: 3
+  timeout: 60
+  rate_limit_delay: 0.5
+
+# Data paths
+data:
+  prompts_dir: "data/prompts"
+  processed_dir: "data/processed"
+  reference_dir: "data/reference_corpus"
+  results_dir: "results"
+  logs_dir: "data/logs"
+
+# Limit for testing (set to null for no limit)
+max_prompts_per_category: null  # Use all available prompts
