@@ -72,6 +72,8 @@ def aggregate_results(config: ProjectConfig):
         'local_id',
         'curvature_score',
         'oppositeness_score',
+        'density',
+        'centrality',
         'metadata'
     ]
     
