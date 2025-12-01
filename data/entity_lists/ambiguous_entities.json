@@ -1,0 +1,98 @@
+{
+    "professions": [
+        "philosopher",
+        "artist",
+        "scientist",
+        "musician",
+        "writer",
+        "athlete",
+        "leader"
+    ],
+    "categories": [
+        "city",
+        "programming language",
+        "book",
+        "movie",
+        "country",
+        "food",
+        "color"
+    ],
+    "actions": [
+        "live in",
+        "learn",
+        "read",
+        "watch",
+        "visit",
+        "eat",
+        "wear"
+    ],
+    "controversial_topics": [
+        "AI alignment",
+        "nuclear energy",
+        "genetic engineering",
+        "cryptocurrency",
+        "social media",
+        "automation",
+        "global governance"
+    ],
+    "items": [
+        "programming language",
+        "operating system",
+        "framework",
+        "tool",
+        "method"
+    ],
+    "option_pairs": [
+        {
+            "option1": "Python",
+            "option2": "JavaScript"
+        },
+        {
+            "option1": "Mac",
+            "option2": "Windows"
+        },
+        {
+            "option1": "React",
+            "option2": "Vue"
+        },
+        {
+            "option1": "cats",
+            "option2": "dogs"
+        }
+    ],
+    "things": [
+        "color",
+        "place",
+        "time of day",
+        "season",
+        "art style"
+    ],
+    "philosophical_concepts": [
+        "life",
+        "consciousness",
+        "free will",
+        "morality",
+        "truth",
+        "beauty"
+    ],
+    "subjective_actions": [
+        "live a good life",
+        "be happy",
+        "find meaning",
+        "make decisions"
+    ],
+    "concept_pairs": [
+        {
+            "concept": "freedom",
+            "other_concept": "security"
+        },
+        {
+            "concept": "innovation",
+            "other_concept": "tradition"
+        },
+        {
+            "concept": "efficiency",
+            "other_concept": "creativity"
+        }
+    ]
+}

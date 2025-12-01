@@ -1,0 +1,12 @@
+[
+    "Who is the current president of {country}?",
+    "What is the capital of {country}?",
+    "In what year did {event} occur?",
+    "What is the chemical formula for {compound}?",
+    "Who wrote the book '{book}'?",
+    "What is the speed of {physical_quantity}?",
+    "How many {unit} are in a {larger_unit}?",
+    "What programming language is primarily used for {purpose}?",
+    "What is the largest {geographic_feature} in the world?",
+    "Who invented the {invention}?"
+]

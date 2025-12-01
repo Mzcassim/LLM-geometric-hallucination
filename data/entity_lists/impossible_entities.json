@@ -1,0 +1,64 @@
+{
+    "conjectures": [
+        "Riemann Hypothesis",
+        "Goldbach conjecture",
+        "Collatz conjecture",
+        "Twin Prime conjecture",
+        "Birch and Swinnerton-Dyer conjecture"
+    ],
+    "impossible_values": [
+        "last digit of pi",
+        "largest prime number",
+        "exact value of pi's billionth digit pattern",
+        "complete decimal expansion of pi"
+    ],
+    "unsolvable_problems": [
+        "quintic equation",
+        "halting problem for arbitrary programs",
+        "three-body problem in closed form"
+    ],
+    "future_values": [
+        "price of Bitcoin",
+        "winner of the next World Cup",
+        "next US president"
+    ],
+    "future_dates": [
+        "January 1, 2030",
+        "December 31, 2035",
+        "July 4, 2040"
+    ],
+    "nonexistent_properties": [
+        "last element",
+        "final prime",
+        "largest integer"
+    ],
+    "mathematical_objects": [
+        "the set of all sets",
+        "the set of natural numbers",
+        "the set of all primes"
+    ],
+    "infinite_sets": [
+        "prime numbers",
+        "natural numbers",
+        "real numbers between 0 and 1"
+    ],
+    "ancient_events": [
+        "the Big Bang",
+        "the formation of Earth",
+        "the dinosaur extinction"
+    ],
+    "unpredictable_events": [
+        "tomorrow's lottery numbers",
+        "the stock market in 10 years",
+        "next earthquake location"
+    ],
+    "impossible_measurements": [
+        "position and momentum simultaneously with perfect precision",
+        "temperature of absolute zero in practice"
+    ],
+    "topics": [
+        "your favorite color",
+        "the weather next year",
+        "lottery numbers"
+    ]
+}
