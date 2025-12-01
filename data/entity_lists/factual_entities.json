@@ -29,7 +29,21 @@
         "Portugal",
         "Netherlands",
         "Belgium",
-        "Switzerland"
+        "Switzerland",
+        "Austria",
+        "Denmark",
+        "Finland",
+        "Ireland",
+        "Israel",
+        "South Korea",
+        "Malaysia",
+        "Philippines",
+        "Singapore",
+        "New Zealand",
+        "Colombia",
+        "Peru",
+        "Venezuela",
+        "Cuba"
     ],
     "events": [
         "World War II",
@@ -43,7 +57,21 @@
         "the invention of the printing press",
         "the first flight by the Wright brothers",
         "the founding of the United Nations",
-        "the signing of the Magna Carta"
+        "the signing of the Magna Carta",
+        "the Declaration of Independence",
+        "the Russian Revolution",
+        "the discovery of America",
+        "the invention of the telephone",
+        "the first atomic bomb test"
+    ],
+    "historical_events": [
+        "the signing of the Declaration of Independence",
+        "the Moon landing",
+        "the fall of the Roman Empire",
+        "the discovery of DNA structure",
+        "the invention of the World Wide Web",
+        "the first human heart transplant",
+        "the discovery of radioactivity"
     ],
     "compounds": [
         "water",
@@ -55,7 +83,27 @@
         "glucose",
         "ethanol",
         "sodium chloride",
-        "calcium carbonate"
+        "calcium carbonate",
+        "hydrogen peroxide",
+        "acetic acid",
+        "sodium bicarbonate",
+        "nitric acid"
+    ],
+    "elements": [
+        "gold",
+        "silver",
+        "iron",
+        "oxygen",
+        "hydrogen",
+        "carbon",
+        "nitrogen",
+        "helium",
+        "neon",
+        "argon",
+        "copper",
+        "aluminum",
+        "uranium",
+        "plutonium"
     ],
     "books": [
         "1984",
@@ -65,7 +113,13 @@
         "The Catcher in the Rye",
         "Moby Dick",
         "War and Peace",
-        "The Odyssey"
+        "The Odyssey",
+        "Harry Potter and the Philosopher's Stone",
+        "The Lord of the Rings",
+        "The Hobbit",
+        "Animal Farm",
+        "Brave New World",
+        "Fahrenheit 451"
     ],
     "physical_quantities": [
         "light in vacuum",
@@ -80,9 +134,13 @@
         "internet",
         "radio",
         "television",
-        "telephone",
         "printing press",
-        "steam engine"
+        "steam engine",
+        "automobile",
+        "microscope",
+        "telegraph",
+        "bicycle",
+        "camera"
     ],
     "geographic_features": [
         "mountain",
@@ -92,7 +150,11 @@
         "lake",
         "waterfall",
         "canyon",
-        "volcano"
+        "volcano",
+        "island",
+        "peninsula",
+        "glacier",
+        "bay"
     ],
     "purposes": [
         "web development",
@@ -100,6 +162,103 @@
         "data science",
         "mobile app development",
         "game development",
-        "scientific computing"
+        "scientific computing",
+        "machine learning",
+        "database management"
+    ],
+    "unit": [
+        "meters",
+        "feet",
+        "inches",
+        "centimeters",
+        "miles",
+        "kilometers"
+    ],
+    "larger_unit": [
+        "kilometer",
+        "mile",
+        "meter",
+        "yard"
+    ],
+    "number": [
+        "144",
+        "169",
+        "196",
+        "225",
+        "256",
+        "289",
+        "324",
+        "361",
+        "400",
+        "625"
+    ],
+    "acronym": [
+        "NASA",
+        "FBI",
+        "CIA",
+        "UNESCO",
+        "NATO",
+        "WHO",
+        "GDP",
+        "DNA",
+        "RNA",
+        "HTTP"
+    ],
+    "achievement": [
+        "walk on the Moon",
+        "circumnavigate the globe",
+        "climb Mount Everest",
+        "break the sound barrier"
+    ],
+    "food": [
+        "bread",
+        "pizza",
+        "pasta",
+        "chocolate",
+        "cheese"
+    ],
+    "celestial_object": [
+        "Earth",
+        "Mars",
+        "Venus",
+        "Jupiter",
+        "Saturn",
+        "Mercury"
+    ],
+    "company": [
+        "Apple",
+        "Microsoft",
+        "Google",
+        "Amazon",
+        "Facebook",
+        "Tesla"
+    ],
+    "artwork": [
+        "Mona Lisa",
+        "Starry Night",
+        "The Scream",
+        "The Last Supper",
+        "Guernica"
+    ],
+    "scientific_discovery": [
+        "gravity",
+        "DNA",
+        "electricity",
+        "penicillin",
+        "radioactivity",
+        "X-rays"
+    ],
+    "physics_concept": [
+        "kinetic energy",
+        "potential energy",
+        "force",
+        "momentum",
+        "acceleration"
+    ],
+    "ocean": [
+        "Atlantic Ocean",
+        "Pacific Ocean",
+        "Indian Ocean",
+        "Arctic Ocean"
     ]
 }

@@ -6,7 +6,11 @@
         "musician",
         "writer",
         "athlete",
-        "leader"
+        "leader",
+        "inventor",
+        "teacher",
+        "doctor",
+        "engineer"
     ],
     "categories": [
         "city",
@@ -15,7 +19,12 @@
         "movie",
         "country",
         "food",
-        "color"
+        "color",
+        "university",
+        "car",
+        "phone",
+        "restaurant",
+        "vacation destination"
     ],
     "actions": [
         "live in",
@@ -24,7 +33,10 @@
         "watch",
         "visit",
         "eat",
-        "wear"
+        "wear",
+        "study",
+        "use",
+        "buy"
     ],
     "controversial_topics": [
         "AI alignment",
@@ -33,14 +45,19 @@
         "cryptocurrency",
         "social media",
         "automation",
-        "global governance"
+        "global governance",
+        "surveillance",
+        "gene editing"
     ],
     "items": [
         "programming language",
         "operating system",
         "framework",
         "tool",
-        "method"
+        "method",
+        "device",
+        "platform",
+        "service"
     ],
     "option_pairs": [
         {
@@ -58,6 +75,14 @@
         {
             "option1": "cats",
             "option2": "dogs"
+        },
+        {
+            "option1": "coffee",
+            "option2": "tea"
+        },
+        {
+            "option1": "iOS",
+            "option2": "Android"
         }
     ],
     "things": [
@@ -65,7 +90,10 @@
         "place",
         "time of day",
         "season",
-        "art style"
+        "art style",
+        "genre",
+        "design",
+        "sound"
     ],
     "philosophical_concepts": [
         "life",
@@ -73,13 +101,20 @@
         "free will",
         "morality",
         "truth",
-        "beauty"
+        "beauty",
+        "justice",
+        "happiness",
+        "knowledge",
+        "existence"
     ],
     "subjective_actions": [
         "live a good life",
         "be happy",
         "find meaning",
-        "make decisions"
+        "make decisions",
+        "raise children",
+        "choose a career",
+        "spend time"
     ],
     "concept_pairs": [
         {
@@ -93,6 +128,158 @@
         {
             "concept": "efficiency",
             "other_concept": "creativity"
+        },
+        {
+            "concept": "individual rights",
+            "other_concept": "collective good"
         }
+    ],
+    "technology": [
+        "social media",
+        "AI",
+        "smartphones",
+        "electric cars",
+        "nuclear power"
+    ],
+    "value": [
+        "quality in life",
+        "virtue",
+        "skill",
+        "achievement"
+    ],
+    "policy_option1": [
+        "increase taxes",
+        "expand healthcare",
+        "invest in space exploration"
+    ],
+    "policy_option2": [
+        "reduce taxes",
+        "reduce government spending",
+        "focus on Earth's problems"
+    ],
+    "ambiguous_text": [
+        "the Constitution",
+        "religious texts",
+        "classic literature"
+    ],
+    "art_form": [
+        "painting",
+        "music",
+        "sculpture",
+        "dance"
+    ],
+    "other_art_form": [
+        "literature",
+        "film",
+        "theater",
+        "photography"
+    ],
+    "lifestyle_choice": [
+        "work-life balance",
+        "diet",
+        "living situation",
+        "daily routine"
+    ],
+    "group": [
+        "society",
+        "individuals",
+        "governments",
+        "companies"
+    ],
+    "goal1": [
+        "economic growth",
+        "environmental protection",
+        "technological advancement"
+    ],
+    "goal2": [
+        "social equality",
+        "cultural preservation",
+        "stability"
+    ],
+    "practice": [
+        "capital punishment",
+        "animal testing",
+        "genetic modification"
+    ],
+    "role": [
+        "leader",
+        "parent",
+        "teacher",
+        "friend",
+        "citizen"
+    ],
+    "cultural_item": [
+        "book",
+        "film",
+        "song",
+        "artwork",
+        "idea"
+    ],
+    "trend": [
+        "remote work",
+        "minimalism",
+        "veganism",
+        "cryptocurrency"
+    ],
+    "complex_issue": [
+        "climate change",
+        "poverty",
+        "education",
+        "healthcare"
+    ],
+    "abstract_concept1": [
+        "efficiency",
+        "innovation",
+        "growth"
+    ],
+    "abstract_concept2": [
+        "tradition",
+        "stability",
+        "sustainability"
+    ],
+    "achievement_type": [
+        "scientific discovery",
+        "artistic work",
+        "human accomplishment"
+    ],
+    "methodology": [
+        "democracy",
+        "capitalism",
+        "scientific method"
+    ],
+    "objective": [
+        "achieve happiness",
+        "solve problems",
+        "make progress"
+    ],
+    "system1": [
+        "democracy",
+        "capitalism",
+        "federalism"
+    ],
+    "system2": [
+        "authoritarianism",
+        "socialism",
+        "centralization"
+    ],
+    "goal": [
+        "reduce poverty",
+        "achieve success",
+        "find happiness"
+    ],
+    "lifestyle": [
+        "urban living",
+        "minimalism",
+        "digital nomad life"
+    ],
+    "other_lifestyle": [
+        "suburban living",
+        "materialism",
+        "settled life"
+    ],
+    "moral_action": [
+        "lie to protect someone",
+        "break a promise for a good reason",
+        "prioritize family over strangers"
     ]
 }

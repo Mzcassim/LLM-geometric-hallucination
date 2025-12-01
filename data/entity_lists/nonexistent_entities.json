@@ -7,7 +7,15 @@
         "Professor Viktor Mendel",
         "Dr. Aria Blackwood",
         "Professor Nathaniel Cross",
-        "Dr. Maya Sterling"
+        "Dr. Maya Sterling",
+        "Dr. William Chen",
+        "Professor Isabella Frost",
+        "Dr. Thomas Anderson",
+        "Professor Rachel Kim",
+        "Dr. Alexander Berg",
+        "Professor Diana Wells",
+        "Dr. Robert Taylor",
+        "Professor Sarah Mitchell"
     ],
     "fake_inventions": [
         "quantum resonance amplifier",
@@ -15,7 +23,14 @@
         "bio-synthetic consciousness",
         "gravitational wave generator",
         "neuro-holographic interface",
-        "molecular phase shifter"
+        "molecular phase shifter",
+        "photonic memory array",
+        "neo-plasma generator",
+        "dark matter detector",
+        "chronometric stabilizer",
+        "neural amplification device",
+        "quantum encryption key",
+        "bio-digital converter"
     ],
     "fake_books": [
         "The Phantom Chronicles of Eldoria",
@@ -23,7 +38,28 @@
         "The Last Echo",
         "Whispers in the Digital Age",
         "The Crimson Manifesto",
-        "Tales from the Forgotten Realm"
+        "Tales from the Forgotten Realm",
+        "The Infinite Mirror",
+        "Echoes of Tomorrow",
+        "The Silent Revolution",
+        "Beyond the Veil",
+        "The Convergence Theory",
+        "Digital Dreams",
+        "The Last Horizon",
+        "Quantum Shadows",
+        "The Memory Architects",
+        "Chronicles of the Void",
+        "The Temporal Paradox"
+    ],
+    "fake_book2": [
+        "The Crystal Protocol",
+        "Nexus Rising",
+        "The Phantom Theorem",
+        "Shadows of the Algorithm",
+        "The Last Equation",
+        "Digital Souls",
+        "The Infinite Code",
+        "Beyond Tomorrow"
     ],
     "fake_authors": [
         "Eleanor Ashford",
@@ -33,7 +69,21 @@
         "Victoria Ashwood",
         "Alexander Grey",
         "Sophia Merchant",
-        "Julian Frost"
+        "Julian Frost",
+        "Catherine Hart",
+        "David Morrison",
+        "Elizabeth Warner",
+        "Jonathan Pierce",
+        "Amanda Sterling",
+        "Richard Cross",
+        "Jennifer Blake",
+        "Michael Chandler"
+    ],
+    "fake_author2": [
+        "Daniel Thornton",
+        "Rebecca Stone",
+        "Lucas Montgomery",
+        "Natalie Rivers"
     ],
     "fake_theories": [
         "temporal resonance",
@@ -41,19 +91,34 @@
         "bio-informational synthesis",
         "gravitational memory",
         "consciousness field theory",
-        "dimensional phase transitions"
+        "dimensional phase transitions",
+        "neural plasticity convergence",
+        "temporal causality loops",
+        "quantum coherence dynamics",
+        "bio-electromagnetic integration",
+        "topological information theory"
     ],
     "fake_scientists": [
         "Dr. Hermann Valcke",
         "Professor Lisa Moreland",
         "Dr. Anton Reichmann",
-        "Professor Sarah Blackmore"
+        "Professor Sarah Blackmore",
+        "Dr. Friedrich Mendel",
+        "Professor Anna Kowalski",
+        "Dr. Marcus Chen",
+        "Professor Elena Rodriguez"
     ],
     "fake_theorems": [
         "Bertrand-Goldstein theorem",
         "Fitzgerald's convergence principle",
         "Morton's inequality",
-        "Valmont-Chen conjecture"
+        "Valmont-Chen conjecture",
+        "Harrison's limit theorem",
+        "Weber's extension principle",
+        "Kellerman's bound",
+        "Thompson's duality",
+        "Anderson's lemma",
+        "Sterling's criterion"
     ],
     "fake_movies": [
         "Shadows Over Meridian",
@@ -61,32 +126,61 @@
         "Digital Dreams",
         "The Convergence Protocol",
         "Echoes of Tomorrow",
-        "The Infinite Mirror"
+        "The Infinite Mirror",
+        "Quantum Shadows",
+        "The Memory Code",
+        "Beyond the Threshold",
+        "The Silent Frequency",
+        "Temporal Nexus",
+        "The Last Algorithm"
     ],
     "fake_elements": [
         "Quantumite",
         "Temporal",
         "Nexium",
         "Chronium",
-        "Aetheron"
+        "Aetheron",
+        "Photonite",
+        "Neutronium",
+        "Darkium",
+        "Plasmonite",
+        "Graviton"
     ],
     "fake_laws": [
         "Law of Temporal Conservation",
         "Blackwood's Principle",
-        "Valmont's Law of Energy Displacement"
+        "Valmont's Law of Energy Displacement",
+        "Chen's Theorem of Quantum States",
+        "Morrison's Law of Information",
+        "Sterling's Principle"
     ],
     "fake_algorithms": [
         "Fibonacci-Euler algorithm",
         "Temporal Sort",
         "Quantum Merge",
-        "Neural Cascade"
+        "Neural Cascade",
+        "Hartwell Transform",
+        "Blackwood Optimization",
+        "Chen-Mendel Algorithm",
+        "Sterling Cipher"
     ],
     "fake_countries": [
         "Zamboria",
         "Valentia",
         "Mordania",
         "Corsantia",
-        "Atlantea"
+        "Atlantea",
+        "Eldoria",
+        "Nexaria",
+        "Chronosia",
+        "Phantomia",
+        "Meridiana"
+    ],
+    "fake_country2": [
+        "Temporia",
+        "Quantia",
+        "Ethereia",
+        "Voidland"
     ],
     "fields": [
         "physics",
@@ -94,7 +188,10 @@
         "biology",
         "chemistry",
         "computer science",
-        "neuroscience"
+        "neuroscience",
+        "quantum mechanics",
+        "molecular biology",
+        "theoretical physics"
     ],
     "years": [
         "2015",
@@ -103,6 +200,103 @@
         "2022",
         "2019",
         "2017",
-        "2021"
+        "2021",
+        "2016",
+        "2014",
+        "2013"
+    ],
+    "fake_event": [
+        "Great Convergence",
+        "Digital Awakening",
+        "Quantum Shift",
+        "Temporal Collapse"
+    ],
+    "fake_company": [
+        "QuantumTech Solutions",
+        "NexusCorp",
+        "Temporal Industries",
+        "BioPhase Technologies"
+    ],
+    "fake_treaty": [
+        "Treaty of Quantum Accords",
+        "Helsinki Convention on AI",
+        "Temporal Agreement",
+        "New Amsterdam Compact"
+    ],
+    "article_number": [
+        "42.7",
+        "15.3",
+        "8.9",
+        "23.1",
+        "17.4"
+    ],
+    "fake_music": [
+        "Symphony of the Void",
+        "Temporal Rhapsody",
+        "Quantum Dreams",
+        "Digital Aurora"
+    ],
+    "fake_disease": [
+        "Temporal Flux Syndrome",
+        "Quantum Degradation Disorder",
+        "Neural Phase Misalignment"
+    ],
+    "fake_building": [
+        "Tower of Convergence",
+        "Quantum Archive",
+        "Nexus Monument"
+    ],
+    "fake_city": [
+        "New Meridian",
+        "Quantum Falls",
+        "Temporal city",
+        "Nexus Prime"
+    ],
+    "fake_principle": [
+        "Principle of Temporal Efficiency",
+        "Law of Digital Convergence"
+    ],
+    "fake_song": [
+        "Digital Moonlight",
+        "Echoes in the Void",
+        "Temporal Waves",
+        "Quantum Heart"
+    ],
+    "fake_band": [
+        "The Resonance Collective",
+        "Quantum Echo",
+        "Digital Horizon",
+        "Temporal Surge"
+    ],
+    "fake_university": [
+        "Valmont Institute of Technology",
+        "Quantum University",
+        "Temporal Academy"
+    ],
+    "fake_play": [
+        "The Convergence",
+        "Shadows of Tomorrow",
+        "Quantum Paradox"
+    ],
+    "fake_playwright": [
+        "Marcus Sterling",
+        "Elena Blackwood",
+        "Viktor Morrison"
+    ],
+    "fake_war": [
+        "Quantum Conflict",
+        "Temporal War",
+        "Digital Revolution"
+    ],
+    "fake_programming_language": [
+        "QuantumScript",
+        "TemporalCode",
+        "NexusLang",
+        "PhaseScript"
+    ],
+    "fake_historical_figure": [
+        "Lord Valmont the Wise",
+        "Queen Meridiana",
+        "Emperor Nexus"
     ]
 }
