@@ -44,7 +44,7 @@ def run_generation(config: ProjectConfig):
     logger.info(f"Loaded {len(all_prompts)} total prompts")
     
     # Limit prompts if specified
-    if config.max_prompts_per_category < float('inf'):
+    if config.max_prompts_per_category is not None and config.max_prompts_per_category < float('inf'):
         # Group by category and limit each
         from collections import defaultdict
         by_category = defaultdict(list)
