@@ -13,7 +13,7 @@ The project:
 4. **Computes Geometric Metrics** around query embeddings (local intrinsic dimension, curvature proxy, geometric oppositeness)
 5. **Analyzes Correlations** between geometry and hallucination
 
-## 🚀 Quick Start
+## 🚀 Quick Start (V2 Pipeline)
 
 ### Installation
 
@@ -28,134 +28,131 @@ pip install -r requirements.txt
 export OPENAI_API_KEY="your-api-key-here"
 ```
 
-### Running the Full Pipeline
+### Running the Full Experiment
+
+We provide a master script to run the entire pipeline end-to-end:
 
 ```bash
-# 1. Build the benchmark (creates prompt files)
-python -m src.pipeline.build_benchmark
+# Run the full production pipeline (368 prompts)
+./run_v2_pipeline.sh
 
-# 2. Generate model answers
-python -m src.pipeline.run_generation --config experiments/config_example.yaml
-
-# 3. Judge hallucinations
-python -m src.pipeline.run_judging --config experiments/config_example.yaml
-
-# 4. Compute geometry features
-python -m src.pipeline.compute_geometry --config experiments/config_example.yaml
-
-# 5. Aggregate all results
-python -m src.pipeline.aggregate_results --config experiments/config_example.yaml
-
-# 6. Generate visualizations and analysis
-python experiments/notebooks/analysis.py --config experiments/config_example.yaml
+# Run a fast test mode (40 prompts)
+./run_v2_pipeline.sh --test
 ```
 
-### Quick Demo (with limited samples)
-
-For a quick demo, edit `experiments/config_example.yaml` and set:
-```yaml
-max_prompts_per_category: 10  # Use only 10 questions per category
-```
+The pipeline automatically:
+1. Builds the benchmark
+2. Generates model responses (multi-sample)
+3. Judges hallucinations
+4. Computes all geometric features
+5. Aggregates results
+6. Trains predictive models & generates early-warning analysis
 
 ## 📁 Repository Structure
 
 ```
 manifold-bends-model-lies/
 ├── README.md                    # This file
+├── run_v2_pipeline.sh           # Master executable script
+├── ANALYSIS_RESULTS.md          # Summary of latest results
 ├── requirements.txt             # Python dependencies
 ├── experiments/
-│   ├── config_example.yaml     # Configuration file
-│   └── notebooks/
-│       └── analysis.py         # Analysis and visualization script
+│   ├── config_v2.yaml          # Production configuration
+│   └── config_example.yaml     # Test configuration
 ├── src/
 │   ├── config.py               # Configuration management
-│   ├── models/                 # Model client abstractions
-│   │   ├── embedding_client.py    # Embedding API wrapper
-│   │   ├── generation_client.py   # Generation API wrapper
-│   │   └── judge_client.py        # LLM-as-a-judge client
+│   ├── models/                 # Model clients (Embedding, Generation, Judge)
 │   ├── geometry/               # Geometric feature computation
+│   │   ├── density.py             # Local density estimation
+│   │   ├── centrality.py          # Distance to center
+│   │   ├── reference_corpus.py    # Normalization corpus builder
 │   │   ├── neighbors.py           # k-NN utilities
 │   │   ├── intrinsic_dimension.py # TwoNN estimator
 │   │   ├── curvature.py           # PCA-based curvature proxy
 │   │   └── oppositeness.py        # Geometric oppositeness metric
 │   ├── evaluation/             # Evaluation and analysis
+│   │   ├── prediction.py          # Predictive modeling (ML)
+│   │   ├── early_warning.py       # Early-warning system
 │   │   ├── metrics.py             # Correlation and stats
 │   │   └── robustness.py          # Robustness checks
 │   ├── pipeline/               # End-to-end pipeline scripts
-│   │   ├── build_benchmark.py     # Create benchmark dataset
-│   │   ├── run_generation.py      # Generate model answers
-│   │   ├── run_judging.py         # Judge hallucinations
-│   │   ├── compute_geometry.py    # Compute geometric features
-│   │   └── aggregate_results.py   # Merge all data
 │   └── utils/                  # Utilities
-│       ├── io.py                  # File I/O helpers
-│       ├── seed.py                # Random seed management
-│       └── logging_utils.py       # Logging utilities
 ├── data/
 │   ├── prompts/                # Benchmark questions (JSONL)
 │   ├── processed/              # Intermediate data files
-│   └── logs/                   # Pipeline logs
+│   └── reference_corpus/       # Normalization data
 └── results/
     ├── all_results.csv         # Final merged dataset
+    ├── prediction/             # Model performance metrics
+    ├── early_warning/          # ROC curves and risk analysis
     ├── figures/                # Generated plots
     └── tables/                 # Analysis tables
 ```
 
-## 🎯 Benchmark Categories
+## 🎯 Benchmark Categories (V2)
 
-The hallucination benchmark includes four categories:
+The V2 benchmark (368 prompts) includes:
 
-1. **Impossible Questions** - Questions about unsolved problems or logical impossibilities
-   - Example: "State and prove the final solution to the Collatz conjecture."
-
-2. **Nonexistent Entities** - Questions about fabricated people, books, theorems, etc.
-   - Example: "Who wrote the book 'The Phantom Chronicles of Eldoria'?"
-
-3. **Ambiguous Questions** - Questions with no single ground truth
-   - Example: "Who is the greatest philosopher of all time?"
-
-4. **Factual Questions** - Clear factual questions with known answers (control group)
-   - Example: "What is the capital of France?"
+1. **Impossible Questions** (30) - Unsolved problems or logical impossibilities
+2. **Nonexistent Entities** (120) - Fabricated people, books, theorems
+3. **Ambiguous Questions** (120) - Questions with no single ground truth
+4. **Factual Questions** (98) - Clear factual questions (control group)
 
 ## 📊 Geometric Features
 
-### 1. Local Intrinsic Dimension (TwoNN)
-Estimates the dimensionality of the manifold near each point using the Two Nearest Neighbors method. Higher values suggest more complex local structure.
+### 1. Local Density (New in V2)
+Inverse average distance to nearest neighbors. Measures how "crowded" or supported a region is.
+- **Hypothesis:** Low density (sparse regions) → High hallucination risk.
 
-### 2. Curvature Proxy
-Measures local curvature via PCA residual variance in neighborhoods. Higher values indicate more irregular/curved regions.
+### 2. Centrality (New in V2)
+Distance from the global center of the embedding space.
+- **Hypothesis:** High distance (peripheral regions) → High hallucination risk.
 
-### 3. Geometric Oppositeness
-Flips principal components and measures distance to the nearest real embedding. Captures how "extreme" or boundary-like a region is.
+### 3. Local Intrinsic Dimension (TwoNN)
+Estimates the dimensionality of the manifold near each point.
+- **Hypothesis:** High dimension (complex regions) → Confusion.
+
+### 4. Curvature Proxy
+PCA residual variance in local neighborhoods.
+- **Hypothesis:** High curvature (irregular regions) → Interpolation errors.
+
+### 5. Geometric Oppositeness
+Distance from sign-flipped PCA projection to nearest real embedding.
+- **Hypothesis:** High oppositeness (extreme/boundary regions) → Hallucination.
+
+## 🔮 Predictive Modeling & Early Warning
+
+The V2 pipeline includes a machine learning module (`src.evaluation.prediction`) that:
+1. Trains classifiers (Logistic Regression, Random Forest) to predict hallucinations based on geometry.
+2. Generates an **Early Warning Report** identifying risky queries before generation.
+3. Simulates mitigation strategies (e.g., "Flagging top 30% of queries catches 85% of lies").
 
 ## 🔧 Configuration
 
-Edit `experiments/config_example.yaml` to customize:
+Edit `experiments/config_v2.yaml` to customize:
 
 ```yaml
-# Model configuration
-embedding_model: "text-embedding-3-large"
-generation_model: "gpt-4o-mini"
-judge_model: "gpt-4o-mini"
+# Project settings
+project_name: "manifold-bends-v2"
 
-# Data paths
-data_dir: "data"
-results_dir: "results"
+# Benchmark settings
+benchmark:
+  prompts_per_category: 120
 
-# Experiment parameters
-max_prompts_per_category: 300  # Max questions per category
-seed: 42                        # Random seed
+# Generation settings
+generation:
+  models:
+    - name: "gpt-4o-mini"
+      samples_per_prompt: 3
 
-# Geometry parameters
-n_neighbors_id: 20              # Neighbors for intrinsic dimension
-n_neighbors_curvature: 30       # Neighbors for curvature
-n_pca_components: 10            # PCA components for oppositeness
-n_flip_components: 3            # Components to flip for oppositeness
-
-# API parameters
-api_timeout: 60
-max_retries: 3
-batch_size: 100
+# Geometry settings
+geometry:
+  metrics:
+    - "local_id"
+    - "curvature"
+    - "oppositeness"
+    - "density"
+    - "centrality"
 ```
 
 ## 📈 Output Files

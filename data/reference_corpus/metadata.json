@@ -1,0 +1,7 @@
+{
+  "n_samples": 368,
+  "embedding_dim": 3072,
+  "pca_components": 50,
+  "pca_explained_variance": 0.6593140439859624,
+  "seed": 42
+}
