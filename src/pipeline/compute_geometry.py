@@ -14,6 +14,9 @@ from src.models.embedding_client import EmbeddingClient
 from src.geometry.intrinsic_dimension import compute_local_id_for_all
 from src.geometry.curvature import compute_curvature_proxy
 from src.geometry.oppositeness import fit_global_pca, compute_oppositeness_scores
+from src.geometry.reference_corpus import load_reference_corpus
+from src.geometry.density import compute_local_density
+from src.geometry.centrality import compute_distance_to_center
 from src.utils.io import read_jsonl
 from src.utils.logging_utils import setup_logger
 from src.utils.seed import set_seed
@@ -71,6 +74,18 @@ def compute_geometry(config: ProjectConfig):
         json.dump(id_mapping, f, indent=2)
     logger.info(f"Saved ID mapping to {mapping_file}")
     
+    # Load reference corpus for V2 features
+    reference_dir = config.data_dir / "reference_corpus"
+    if reference_dir.exists():
+        logger.info("Loading reference corpus...")
+        ref_corpus = load_reference_corpus(reference_dir)
+        ref_embeddings = ref_corpus["embeddings"]
+        ref_mean = ref_corpus["mean"]
+    else:
+        logger.warning("Reference corpus not found! Using self as reference (not recommended for production).")
+        ref_embeddings = question_embeddings
+        ref_mean = np.mean(question_embeddings, axis=0)
+    
     # Compute local intrinsic dimension
     logger.info("Computing local intrinsic dimensions...")
     local_ids = compute_local_id_for_all(
@@ -102,13 +117,34 @@ def compute_geometry(config: ProjectConfig):
     )
     logger.info(f"Oppositeness range: {np.nanmin(oppositeness_scores):.4f} to {np.nanmax(oppositeness_scores):.4f}")
     
+    # Compute Density (V2)
+    logger.info("Computing local density...")
+    density_scores = compute_local_density(
+        question_embeddings,
+        ref_embeddings,
+        k=config.n_neighbors_id,
+        metric='cosine'
+    )
+    logger.info(f"Density range: {np.nanmin(density_scores):.4f} to {np.nanmax(density_scores):.4f}")
+    
+    # Compute Centrality (V2)
+    logger.info("Computing centrality...")
+    centrality_scores = compute_distance_to_center(
+        question_embeddings,
+        ref_mean,
+        metric='cosine'
+    )
+    logger.info(f"Centrality range: {np.nanmin(centrality_scores):.4f} to {np.nanmax(centrality_scores):.4f}")
+    
     # Create features dataframe
     features_df = pd.DataFrame({
         'id': question_ids,
         'category': categories,
         'local_id': local_ids,
         'curvature_score': curvature_scores,
-        'oppositeness_score': oppositeness_scores
+        'oppositeness_score': oppositeness_scores,
+        'density': density_scores,
+        'centrality': centrality_scores
     })
     
     # Save features
@@ -124,6 +160,8 @@ def compute_geometry(config: ProjectConfig):
         logger.info(f"  Local ID: mean={cat_data['local_id'].mean():.2f}, std={cat_data['local_id'].std():.2f}")
         logger.info(f"  Curvature: mean={cat_data['curvature_score'].mean():.4f}, std={cat_data['curvature_score'].std():.4f}")
         logger.info(f"  Oppositeness: mean={cat_data['oppositeness_score'].mean():.4f}, std={cat_data['oppositeness_score'].std():.4f}")
+        logger.info(f"  Density: mean={cat_data['density'].mean():.4f}, std={cat_data['density'].std():.4f}")
+        logger.info(f"  Centrality: mean={cat_data['centrality'].mean():.4f}, std={cat_data['centrality'].std():.4f}")
     
     logger.info("\nGeometry computation complete!")
 
