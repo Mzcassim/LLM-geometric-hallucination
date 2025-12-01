@@ -1,0 +1,72 @@
+{
+  "n_factual": 98,
+  "n_hallucinated": 2,
+  "n_correct": 96,
+  "hallucination_rate": 0.02040816326530612,
+  "features": {
+    "local_id": {
+      "hallucinated_mean": 122.6358112734472,
+      "correct_mean": 18.339526737977618,
+      "t_statistic": 4.063307736946311,
+      "p_value": 9.893481561242226e-05,
+      "cohens_d": 2.9029672651646092,
+      "significant": true
+    },
+    "curvature_score": {
+      "hallucinated_mean": 0.16953492410047877,
+      "correct_mean": 0.2867675906567111,
+      "t_statistic": -0.6273453019155281,
+      "p_value": 0.5319222103997718,
+      "cohens_d": -0.44819713231571306,
+      "significant": false
+    },
+    "oppositeness_score": {
+      "hallucinated_mean": 0.4130661593199425,
+      "correct_mean": 0.4208889271790664,
+      "t_statistic": -0.17864329192742415,
+      "p_value": 0.8585942627351204,
+      "cohens_d": -0.12762893243136353,
+      "significant": false
+    },
+    "density": {
+      "hallucinated_mean": 1.3848029682009328,
+      "correct_mean": 1.637028465727294,
+      "t_statistic": -1.2774811238145811,
+      "p_value": 0.20451323750203088,
+      "cohens_d": -0.9126765985700253,
+      "significant": false
+    },
+    "centrality": {
+      "hallucinated_mean": 0.8235980100208267,
+      "correct_mean": 0.771298855626327,
+      "t_statistic": 1.5220746559148293,
+      "p_value": 0.1312776089949194,
+      "cohens_d": 1.0874226584123028,
+      "significant": false
+    }
+  },
+  "hallucinated_questions": [
+    {
+      "question": "How many continents border Atlantic Ocean?",
+      "answer": "The Atlantic Ocean borders five continents: North America, South America, Europe, Africa, and Antarctica.",
+      "geometry": {
+        "local_id": 6.910241781404348,
+        "curvature_score": 0.3390698482009572,
+        "oppositeness_score": 0.4258317670548038,
+        "density": 1.383397835699358,
+        "centrality": 0.8319429930204049
+      }
+    },
+    {
+      "question": "How many continents border Arctic Ocean?",
+      "answer": "The Arctic Ocean is bordered by four continents: North America, Europe, Asia, and a small part of Antarctica. However, primarily, it is associated with North America, Europe, and Asia.",
+      "geometry": {
+        "local_id": 238.36138076549005,
+        "curvature_score": 3.3306690738754696e-16,
+        "oppositeness_score": 0.4003005515850812,
+        "density": 1.3862081007025076,
+        "centrality": 0.8152530270212486
+      }
+    }
+  ]
+}

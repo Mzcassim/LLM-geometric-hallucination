@@ -1,0 +1,50 @@
+[
+  {
+    "category": "impossible",
+    "n_samples": 30,
+    "n_hallucinated": 10,
+    "hallucination_rate": 0.3333333333333333,
+    "lr_auc": 0.38888888888888884,
+    "lr_accuracy": 0.5555555555555556,
+    "lr_coefficients": {
+      "local_id": 0.027738261298000503,
+      "curvature_score": 0.14907722407827684,
+      "oppositeness_score": -0.05092833829819955,
+      "density": -0.019594955252320762,
+      "centrality": 0.10304599540241907
+    },
+    "rf_auc": 0.5,
+    "rf_accuracy": 0.6666666666666666,
+    "rf_feature_importance": {
+      "local_id": 0.13747008959416712,
+      "curvature_score": 0.16887614863149442,
+      "oppositeness_score": 0.23601340287967498,
+      "density": 0.20566997827809141,
+      "centrality": 0.251970380616572
+    }
+  },
+  {
+    "category": "nonexistent",
+    "n_samples": 120,
+    "n_hallucinated": 103,
+    "hallucination_rate": 0.8583333333333333,
+    "lr_auc": 0.9290322580645161,
+    "lr_accuracy": 0.8611111111111112,
+    "lr_coefficients": {
+      "local_id": -0.0007529714055086094,
+      "curvature_score": -1.0693819672762472,
+      "oppositeness_score": 0.19398020808718566,
+      "density": 1.3013627078874737,
+      "centrality": -0.20637126326136263
+    },
+    "rf_auc": 0.9290322580645163,
+    "rf_accuracy": 0.8611111111111112,
+    "rf_feature_importance": {
+      "local_id": 0.16967220362956584,
+      "curvature_score": 0.1887366288641112,
+      "oppositeness_score": 0.21007164119837984,
+      "density": 0.21099516955857867,
+      "centrality": 0.22052435674936455
+    }
+  }
+]

@@ -236,8 +236,6 @@ This project is provided for research purposes.
 
 ## 🙏 Acknowledgments
 
-Based on research into the geometric properties of embedding spaces and their relationship to model behavior.
-
----
+Mohamed Zidan Cassim (for making this experiment)
 
 **For questions or issues, please open an issue on GitHub.**
