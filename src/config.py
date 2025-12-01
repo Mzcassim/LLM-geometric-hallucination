@@ -33,6 +33,7 @@ class ProjectConfig:
     api_timeout: int = 60
     max_retries: int = 3
     batch_size: int = 100
+    embedding_batch_size: int = 100  # For embedding API calls
     
     def __post_init__(self):
         """Convert string paths to Path objects."""
