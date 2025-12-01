@@ -1,0 +1,18 @@
+embedding_model: "text-embedding-3-large"
+generation_model: "gpt-4o-mini"
+judge_model: "gpt-4o-mini"
+max_prompts_per_category: 300
+data_dir: "data"
+results_dir: "results"
+seed: 42
+
+# Geometry computation parameters
+n_neighbors_id: 20
+n_neighbors_curvature: 30
+n_pca_components: 10
+n_flip_components: 3
+
+# API parameters
+api_timeout: 60
+max_retries: 3
+batch_size: 100
