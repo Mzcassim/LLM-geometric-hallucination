@@ -14,7 +14,7 @@ import random
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.models.embedding_client import EmbeddingClient
-from src.models.generation_client import GenerationClient
+from src.models.multi_model_client import get_model_client
 from src.models.judge_client import JudgeClient
 from src.geometry.density import compute_local_density
 from src.geometry.centrality import compute_distance_to_center
@@ -106,6 +106,24 @@ class ManifoldAttacker:
         
         return ' '.join(words)
     
+    def add_nonsense_suffix(self, question):
+        """Add high-entropy nonsense suffix to push embedding to outlier region."""
+        # Generate random string
+        chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        suffix = ''.join(random.choices(chars, k=20))
+        return f"{question} [{suffix}]"
+
+    def add_false_premise(self, question):
+        """Add a strong false premise that contradicts reality."""
+        premises = [
+            f"Assuming that the opposite is true, {question}",
+            f"In a fictional world where facts are inverted, {question}",
+            f"Given that experts have recently debunked this, {question}",
+            f"Under the premise that this entity does not exist, {question}",
+            f"If we assume the standard answer is a conspiracy, {question}"
+        ]
+        return random.choice(premises)
+
     def perturb(self, question, method='confusing'):
         """Apply perturbation method."""
         if method == 'confusing':
@@ -114,6 +132,10 @@ class ManifoldAttacker:
             return self.replace_with_synonyms(question)
         elif method == 'noise':
             return self.add_noise_tokens(question)
+        elif method == 'nonsense':
+            return self.add_nonsense_suffix(question)
+        elif method == 'false_premise':
+            return self.add_false_premise(question)
         else:
             return question
 
@@ -144,16 +166,14 @@ def run_attack_experiment(config, n_samples=20, seed=42):
         batch_size=config.embedding_batch_size
     )
     
-    gen_client = GenerationClient(
-        model_name=config.generation_model,
-        max_retries=config.max_retries,
-        timeout=config.api_timeout
-    )
+    # Use MultiModelClient instead of GenerationClient
+    gen_client = get_model_client('gpt-4o-mini')  # Use a fast, cheap model for attacks
     
     judge_client = JudgeClient(
-        model_name=config.judge_model,
-        max_retries=config.max_retries,
-        timeout=config.api_timeout
+        provider='openai',
+        model_name='gpt-4o-mini',  # Use same model for judging
+        max_retries=3,
+        timeout=60
     )
     
     # Load reference corpus
@@ -164,7 +184,7 @@ def run_attack_experiment(config, n_samples=20, seed=42):
     
     # Run attacks
     results = []
-    methods = ['confusing', 'synonyms', 'noise']
+    methods = ['confusing', 'synonyms', 'noise', 'nonsense', 'false_premise']
     
     for idx, row in df_sample.iterrows():
         original_q = row['question']
@@ -190,7 +210,11 @@ def run_attack_experiment(config, n_samples=20, seed=42):
             
             # Generate answer
             try:
-                answer = gen_client.generate(perturbed_q, max_tokens=200)
+                answer = gen_client.generate(
+                    prompt=perturbed_q,
+                    max_tokens=200,
+                    temperature=0.7
+                )
                 
                 # Judge
                 judgment = judge_client.judge(

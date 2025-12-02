@@ -1,0 +1,11 @@
+model,unanimous_count,majority_count,split_count,unanimous_rate,majority_rate,split_rate
+qwen-3-next-80b,0,0,0,0.0,0.0,0.0
+claude-haiku-4.5,0,0,0,0.0,0.0,0.0
+claude-opus-4.5,0,0,0,0.0,0.0,0.0
+gpt-4.1-mini,0,0,0,0.0,0.0,0.0
+claude-sonnet-4.5,0,0,0,0.0,0.0,0.0
+llama-4-maverick-17b,0,0,0,0.0,0.0,0.0
+gpt-5.1,0,0,0,0.0,0.0,0.0
+gpt-4.1,0,0,0,0.0,0.0,0.0
+gpt-4o-mini,0,0,0,0.0,0.0,0.0
+mixtral-8x7b,0,0,0,0.0,0.0,0.0

@@ -176,7 +176,11 @@ def create_confidence_visualizations(confidence_df, agreement_df, full_df, outpu
     
     print(f"Saved visualization to {output_path / 'judge_confidence_analysis.png'}")
     
-    # Figure 2: Confidence vs Hallucination Rate
+    # Figure 2: Confidence vs Hallucination Rate (only if we have hallucination data)
+    if 'is_hallucinated' not in full_df.columns:
+        print("Note: Skipping confidence vs hallucination plot (no hallucination labels in data)")
+        return
+    
     fig, ax = plt.subplots(figsize=(8, 6))
     
     # Bin by confidence
@@ -184,7 +188,7 @@ def create_confidence_visualizations(confidence_df, agreement_df, full_df, outpu
     full_df['conf_bin'] = pd.cut(full_df['judge_confidence'], bins)
     
     # Calculate hallucination rate per bin
-    grouped = full_df.groupby('conf_bin').agg({
+    grouped = full_df.groupby('conf_bin', observed=True).agg({
         'is_hallucinated': ['mean', 'count']
     }).reset_index()
     
@@ -208,7 +212,7 @@ def create_confidence_visualizations(confidence_df, agreement_df, full_df, outpu
 def integrate_human_verification(full_df, human_verification_file, output_path):
     """Integrate human verification data to analyze AI judge calibration."""
     
-    print("\n=== HUMAN VERIFICATION INTEGRATION ===\")
+    print("\n=== HUMAN VERIFICATION INTEGRATION ===")
     
     try:
         with open(human_verification_file, 'r') as f:

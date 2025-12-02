@@ -16,6 +16,9 @@ def kendall_tau_correlation(results_df):
     Returns:
         DataFrame with correlation matrix
     """
+    # Drop duplicates if any
+    results_df = results_df.drop_duplicates(subset=['id', 'model_name'])
+    
     # Pivot to get model columns
     pivot = results_df.pivot(index='id', columns='model_name', values='is_hallucinated')
     

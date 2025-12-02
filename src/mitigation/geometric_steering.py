@@ -13,7 +13,7 @@ import json
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.models.embedding_client import EmbeddingClient
-from src.models.generation_client import GenerationClient
+from src.models.multi_model_client import get_model_client
 from src.models.judge_client import JudgeClient
 from src.geometry.density import compute_local_density
 from src.geometry.centrality import compute_distance_to_center
@@ -73,7 +73,7 @@ Original question: {question}
 Provide 3 rephrased versions, one per line, numbered 1-3."""
         
         try:
-            response = self.gen_client.generate(prompt, max_tokens=300)
+            response = self.gen_client.generate(prompt=prompt, max_tokens=300)
             
             # Parse numbered lines
             lines = [line.strip() for line in response.split('\n') if line.strip()]
@@ -190,14 +190,12 @@ def run_steering_experiment(config, n_samples=10, seed=42):
         batch_size=config.embedding_batch_size
     )
     
-    gen_client = GenerationClient(
-        model_name=config.generation_model,
-        max_retries=config.max_retries,
-        timeout=config.api_timeout
-    )
+    # Use MultiModelClient for rephrasing and generation
+    gen_client = get_model_client('gpt-4o-mini')
     
     judge_client = JudgeClient(
-        model_name=config.judge_model,
+        provider='openai',
+        model_name='gpt-4o-mini',
         max_retries=config.max_retries,
         timeout=config.api_timeout
     )
@@ -226,7 +224,11 @@ def run_steering_experiment(config, n_samples=10, seed=42):
         if steered_q != question:
             print(f"\nGenerating answer for steered question...")
             try:
-                steered_answer = gen_client.generate(steered_q, max_tokens=200)
+                steered_answer = gen_client.generate(
+                    prompt=steered_q,
+                    max_tokens=200,
+                    temperature=0.7
+                )
                 
                 # Judge steered answer
                 steered_judgment = judge_client.judge(
