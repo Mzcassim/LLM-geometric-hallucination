@@ -12,28 +12,28 @@ from openai import OpenAI
 class MultiModelClient:
     """Unified client for multiple LLM providers."""
     
-    def __init__(self, provider: str, model_name: str, **kwargs):
+    def __init__(self, provider: str, model_name: str):
         """
-        Initialize multi-model client.
+        Initialize client for specified provider.
         
         Args:
             provider: 'openai', 'anthropic', or 'together'
             model_name: Model identifier
-            **kwargs: Additional provider-specific parameters
         """
         self.provider = provider.lower()
         self.model_name = model_name
-        self.kwargs = kwargs
         
+        # Add explicit timeout (60 seconds) to prevent infinite hangs
         if self.provider == 'openai':
-            self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+            self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'), timeout=60.0)
         elif self.provider == 'anthropic':
-            self.client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
+            self.client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'), timeout=60.0)
         elif self.provider == 'together':
             # Together uses OpenAI-compatible API
             self.client = OpenAI(
-                api_key=os.getenv('TOGETHER_API_KEY'),
-                base_url="https://api.together.xyz/v1"
+                api_key=os.environ.get('TOGETHER_API_KEY'),
+                base_url='https://api.together.xyz/v1',
+                timeout=60.0
             )
         else:
             raise ValueError(f"Unknown provider: {provider}")
@@ -51,12 +51,26 @@ class MultiModelClient:
                 return response.content[0].text
             else:
                 # OpenAI and Together use same API
-                response = self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=max_tokens,
-                    temperature=temperature
-                )
+                # Newer OpenAI models (o1, gpt-4o) prefer max_completion_tokens
+                try:
+                    response = self.client.chat.completions.create(
+                        model=self.model_name,
+                        messages=[{"role": "user", "content": prompt}],
+                        max_tokens=max_tokens,
+                        temperature=temperature
+                    )
+                except Exception as e:
+                    if "max_tokens" in str(e) and "max_completion_tokens" in str(e):
+                        # Retry with max_completion_tokens
+                        response = self.client.chat.completions.create(
+                            model=self.model_name,
+                            messages=[{"role": "user", "content": prompt}],
+                            max_completion_tokens=max_tokens,
+                            temperature=temperature
+                        )
+                    else:
+                        raise e
+                        
                 return response.choices[0].message.content
         except Exception as e:
             print(f"Error generating with {self.provider}/{self.model_name}: {e}")
@@ -66,31 +80,43 @@ class MultiModelClient:
         return f"MultiModelClient(provider='{self.provider}', model='{self.model_name}')"
 
 
-# Model configurations
-MODEL_CONFIGS = {
-    # Frontier models (current SOTA)
-    'gpt-4o': {'provider': 'openai', 'model': 'gpt-4o-2024-08-06'},
-    'gpt-4o-mini': {'provider': 'openai', 'model': 'gpt-4o-mini'},
-    'claude-3-5-sonnet': {'provider': 'anthropic', 'model': 'claude-3-5-sonnet-20241022'},
-    'claude-3-5-haiku': {'provider': 'anthropic', 'model': 'claude-3-5-haiku-20241022'},
-    
-    # Legacy models (older but still used)
-    'gpt-3.5-turbo': {'provider': 'openai', 'model': 'gpt-3.5-turbo'},
-    
-    # Lesser-known models (Together AI)
-    'llama-3.1-70b': {'provider': 'together', 'model': 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo'},
-    'llama-3.1-8b': {'provider': 'together', 'model': 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo'},
-    'mixtral-8x7b': {'provider': 'together', 'model': 'mistralai/Mixtral-8x7B-Instruct-v0.1'},
-    'qwen-2.5-72b': {'provider': 'together', 'model': 'Qwen/Qwen2.5-72B-Instruct-Turbo'},
-}
+import yaml
+from pathlib import Path
 
+def load_model_config(config_path: str = "experiments/multi_model_config.yaml") -> Dict[str, Dict[str, str]]:
+    """Load model configurations from YAML file."""
+    try:
+        with open(config_path, 'r') as f:
+            config = yaml.safe_load(f)
+        
+        model_map = {}
+        for model in config.get('models', []):
+            model_map[model['name']] = {
+                'provider': model['provider'],
+                'model': model['model_id']
+            }
+        return model_map
+    except Exception as e:
+        print(f"Error loading config from {config_path}: {e}")
+        return {}
 
-def get_model_client(model_key: str) -> MultiModelClient:
+def get_model_client(model_key: str, config_path: str = "experiments/multi_model_config.yaml") -> MultiModelClient:
     """Get a configured model client by key."""
-    if model_key not in MODEL_CONFIGS:
-        raise ValueError(f"Unknown model: {model_key}. Available: {list(MODEL_CONFIGS.keys())}")
+    model_configs = load_model_config(config_path)
     
-    config = MODEL_CONFIGS[model_key]
+    if model_key not in model_configs:
+        # Fallback to hardcoded defaults if config fails or key missing
+        defaults = {
+            'gpt-4o-mini': {'provider': 'openai', 'model': 'gpt-4o-mini'},
+            'gpt-3.5-turbo': {'provider': 'openai', 'model': 'gpt-3.5-turbo'},
+        }
+        if model_key in defaults:
+            config = defaults[model_key]
+            return MultiModelClient(provider=config['provider'], model_name=config['model'])
+            
+        raise ValueError(f"Unknown model: {model_key}. Available in config: {list(model_configs.keys())}")
+    
+    config = model_configs[model_key]
     return MultiModelClient(provider=config['provider'], model_name=config['model'])
 
 

@@ -1,241 +1,233 @@
-# When the Manifold Bends, the Model Lies
+# Manifold Bends, Model Lies
 
-**Geometric Predictors of Hallucination in Large Language Models**
+**Research Project**: Geometric Predictors of LLM Hallucinations
 
-This repository implements a research pipeline to investigate the relationship between geometric properties of embedding spaces and hallucination behavior in LLMs. The core hypothesis is that local geometric features (intrinsic dimension, curvature, and "oppositeness") in the embedding manifold may correlate with a model's tendency to hallucinate.
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 📋 Overview
+---
 
-The project:
-1. **Builds a Hallucination Benchmark** with four categories of questions designed to elicit varying hallucination behaviors
-2. **Generates Model Responses** using a target LLM
-3. **Judges Hallucination Severity** using an LLM-as-a-judge approach
-4. **Computes Geometric Metrics** around query embeddings (local intrinsic dimension, curvature proxy, geometric oppositeness)
-5. **Analyzes Correlations** between geometry and hallucination
+## 🎯 Research Question
 
-## 🚀 Quick Start (V2 Pipeline)
+**Do geometric properties of embedding space predict when large language models hallucinate, and is this pattern universal across different model families?**
 
-### Installation
+We test this across 10 frontier models (GPT-5.1, Claude Opus 4.5, Llama 4) using 538 carefully designed prompts spanning factual, nonexistent, impossible, and ambiguous categories.
 
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
 ```bash
-# Clone the repository
-cd manifold-bends-model-lies
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Set up your OpenAI API key
-export OPENAI_API_KEY="your-api-key-here"
 ```
 
-### Running the Full Experiment
-
-We provide a master script to run the entire pipeline end-to-end:
-
+### Set API Keys
 ```bash
-# Run the full production pipeline (368 prompts)
-./run_v2_pipeline.sh
-
-# Run a fast test mode (40 prompts)
-./run_v2_pipeline.sh --test
+export OPENAI_API_KEY="your-key"
+export ANTHROPIC_API_KEY="your-key"
+export TOGETHER_API_KEY="your-key"
 ```
 
-The pipeline automatically:
-1. Builds the benchmark
-2. Generates model responses (multi-sample)
-3. Judges hallucinations
-4. Computes all geometric features
-5. Aggregates results
-6. Trains predictive models & generates early-warning analysis
+### Run the Complete Experiment
+```bash
+./run_reproduction.sh
+```
+
+**Select an option:**
+1. **Single-Model Deep Dive** (V2): Detailed analysis of GPT-4o-mini (~2 hours)
+2. **Multi-Model Consistency** (V3): Test 10 frontier models (~3-4 hours) ⭐
+3. **Novel Experiments**: Adversarial attacks and geometric steering (~1-2 hours)
+
+---
+
+## 📊 What This Project Does
+
+### Phase 1: V2 Single-Model Analysis
+- Generate 538 answers from GPT-4o-mini
+- Compute geometric features (curvature, density, centrality)
+- Train predictive models (Random Forest, Logistic Regression)
+- **Output**: AUC scores, feature importance, risk manifold visualizations
+
+### Phase 2: V3 Multi-Model Consistency
+- Test 10 models in parallel (grouped by provider to avoid rate limits)
+- Consensus judging with 3-model panel (majority vote)
+- Statistical tests (Kendall's Tau, logistic regression)
+- **Output**: Cross-model correlation, universality analysis
+
+### Phase 3: Novel Experiments
+- **Adversarial Attacks**: Push safe prompts into dangerous geometric regions
+- **Geometric Steering**: Rephrase risky prompts to safer regions
+- **Output**: Causation proof, mitigation effectiveness
+
+---
 
 ## 📁 Repository Structure
 
 ```
 manifold-bends-model-lies/
-├── README.md                    # This file
-├── run_v2_pipeline.sh           # Master executable script
-├── ANALYSIS_RESULTS.md          # Summary of latest results
-├── requirements.txt             # Python dependencies
-├── experiments/
-│   ├── config_v2.yaml          # Production configuration
-│   └── config_example.yaml     # Test configuration
-├── src/
-│   ├── config.py               # Configuration management
-│   ├── models/                 # Model clients (Embedding, Generation, Judge)
-│   ├── geometry/               # Geometric feature computation
-│   │   ├── density.py             # Local density estimation
-│   │   ├── centrality.py          # Distance to center
-│   │   ├── reference_corpus.py    # Normalization corpus builder
-│   │   ├── neighbors.py           # k-NN utilities
-│   │   ├── intrinsic_dimension.py # TwoNN estimator
-│   │   ├── curvature.py           # PCA-based curvature proxy
-│   │   └── oppositeness.py        # Geometric oppositeness metric
-│   ├── evaluation/             # Evaluation and analysis
-│   │   ├── prediction.py          # Predictive modeling (ML)
-│   │   ├── early_warning.py       # Early-warning system
-│   │   ├── metrics.py             # Correlation and stats
-│   │   └── robustness.py          # Robustness checks
-│   ├── pipeline/               # End-to-end pipeline scripts
-│   └── utils/                  # Utilities
+├── README.md                      # You are here
+├── docs/
+│   ├── EXPERIMENT_GUIDE.md        # Comprehensive experiment documentation
+│   └── QUICKSTART.md              # Quick reference guide
+│
+├── run_reproduction.sh            # Master entry point (3 options)
+├── run_complete_analysis.sh       # Run all statistical tests & visualizations
+│
 ├── data/
-│   ├── prompts/                # Benchmark questions (JSONL)
-│   ├── processed/              # Intermediate data files
-│   └── reference_corpus/       # Normalization data
+│   ├── prompts/                   # 538 generated prompts
+│   ├── templates/                 # Prompt templates (factual, nonexistent, etc.)
+│   └── processed/                 # Embeddings and geometry features
+│
+├── src/
+│   ├── pipeline/                  # Generation, judging, aggregation
+│   ├── models/                    # MultiModelClient, ConsensusJudge
+│   ├── geometry/                  # Curvature, density, centrality computation
+│   ├── evaluation/                # Statistical tests, table generation
+│   ├── visualization/             # Risk manifolds, heatmaps
+│   ├── attacks/                   # Adversarial manifold attacks
+│   └── mitigation/                # Geometric steering
+│
+├── experiments/
+│   └── multi_model_config.yaml    # Model configurations (10 frontier models)
+│
 └── results/
-    ├── all_results.csv         # Final merged dataset
-    ├── prediction/             # Model performance metrics
-    ├── early_warning/          # ROC curves and risk analysis
-    ├── figures/                # Generated plots
-    └── tables/                 # Analysis tables
+    ├── v2/                        # Single-model results
+    └── v3/multi_model/            # Multi-model results
+        ├── judged/                # Consensus judgments
+        ├── figures/               # Visualizations
+        ├── tables/                # Publication-ready tables
+        └── stats/                 # Statistical test results
 ```
 
-## 🎯 Benchmark Categories (V2)
+---
 
-The V2 benchmark (368 prompts) includes:
+## 🔬 Analysis Workflow
 
-1. **Impossible Questions** (30) - Unsolved problems or logical impossibilities
-2. **Nonexistent Entities** (120) - Fabricated people, books, theorems
-3. **Ambiguous Questions** (120) - Questions with no single ground truth
-4. **Factual Questions** (98) - Clear factual questions (control group)
+### After Multi-Model Run (Option 2) Finishes:
 
-## 📊 Geometric Features
-
-### 1. Local Density (New in V2)
-Inverse average distance to nearest neighbors. Measures how "crowded" or supported a region is.
-- **Hypothesis:** Low density (sparse regions) → High hallucination risk.
-
-### 2. Centrality (New in V2)
-Distance from the global center of the embedding space.
-- **Hypothesis:** High distance (peripheral regions) → High hallucination risk.
-
-### 3. Local Intrinsic Dimension (TwoNN)
-Estimates the dimensionality of the manifold near each point.
-- **Hypothesis:** High dimension (complex regions) → Confusion.
-
-### 4. Curvature Proxy
-PCA residual variance in local neighborhoods.
-- **Hypothesis:** High curvature (irregular regions) → Interpolation errors.
-
-### 5. Geometric Oppositeness
-Distance from sign-flipped PCA projection to nearest real embedding.
-- **Hypothesis:** High oppositeness (extreme/boundary regions) → Hallucination.
-
-## 🔮 Predictive Modeling & Early Warning
-
-The V2 pipeline includes a machine learning module (`src.evaluation.prediction`) that:
-1. Trains classifiers (Logistic Regression, Random Forest) to predict hallucinations based on geometry.
-2. Generates an **Early Warning Report** identifying risky queries before generation.
-3. Simulates mitigation strategies (e.g., "Flagging top 30% of queries catches 85% of lies").
-
-## 🔧 Configuration
-
-Edit `experiments/config_v2.yaml` to customize:
-
-```yaml
-# Project settings
-project_name: "manifold-bends-v2"
-
-# Benchmark settings
-benchmark:
-  prompts_per_category: 120
-
-# Generation settings
-generation:
-  models:
-    - name: "gpt-4o-mini"
-      samples_per_prompt: 3
-
-# Geometry settings
-geometry:
-  metrics:
-    - "local_id"
-    - "curvature"
-    - "oppositeness"
-    - "density"
-    - "centrality"
+#### 1. Run Complete Analysis
+```bash
+./run_complete_analysis.sh
 ```
 
-## 📈 Output Files
+This generates:
+- ✅ Statistical tests (Kendall's Tau correlation)
+- ✅ Publication tables (model performance, consistency)
+- ✅ Visualizations (risk manifolds, heatmaps)
 
-After running the full pipeline, you'll have:
-
-- `data/prompts/*.jsonl` - Benchmark questions
-- `data/processed/model_answers.jsonl` - Generated answers
-- `data/processed/judged_answers.jsonl` - Hallucination judgments
-- `data/processed/question_embeddings.npy` - Embeddings
-- `data/processed/geometry_features.csv` - Geometric metrics
-- `results/all_results.csv` - **Complete merged dataset**
-- `results/figures/` - Visualizations
-- `results/tables/` - Correlation and statistics tables
-
-## 🔬 Analysis
-
-The analysis script generates:
-
-1. **Distribution plots** - Geometry feature distributions by hallucination status
-2. **Scatter plots** - Geometry vs. hallucination with correlation coefficients
-3. **Box plots** - Geometry features by question category
-4. **Bin analysis** - Hallucination rates across geometry feature bins
-5. **Correlation tables** - Pearson and Spearman correlations
-6. **Descriptive statistics** - Summary stats by category
-
-## 🧪 Example Analysis Workflow
-
-```python
-import pandas as pd
-from src.evaluation.metrics import compute_correlations
-
-# Load results
-df = pd.read_csv("results/all_results.csv")
-
-# Compute correlations
-geometry_features = ['local_id', 'curvature_score', 'oppositeness_score']
-correlations = compute_correlations(df, geometry_features, target='is_hallucinated')
-print(correlations)
-
-# Filter to high-confidence judgments
-high_conf = df[df['judge_confidence'] >= 0.7]
-
-# Analyze specific category
-impossible = df[df['category'] == 'impossible']
-print(impossible[['question', 'judge_label', 'local_id']].head())
+#### 2. Human Verification
+```bash
+python3 -m src.evaluation.verify_judgments --n 50
 ```
 
-## 📝 Key Components
+Manually verify 50 random judgments to establish AI judge accuracy.
 
-### LLM-as-a-Judge Prompt
+**See [`docs/EXPERIMENT_GUIDE.md`](docs/EXPERIMENT_GUIDE.md#analysis-plan) for detailed instructions.**
 
-The judge evaluates answers using a structured prompt that provides:
-- The question
-- The model's answer
-- Ground truth/evidence
+---
 
-It returns:
-- **Label**: 0=correct, 1=partial, 2=hallucinated, 3=uncertain/refusal
-- **Confidence**: Float from 0 to 1
-- **Justification**: Brief explanation
+## 📈 Key Outputs
 
-### Geometric Metrics Implementation
+### Tables
+| File | Description |
+|------|-------------|
+| `results/v3/multi_model/tables/table1_model_performance.csv` | Hallucination rates per model |
+| `results/v3/multi_model/tables/table2_consistency_summary.csv` | Cross-model agreement metrics |
 
-- **TwoNN**: Uses distance ratios to 1st and 2nd nearest neighbors
-- **Curvature**: PCA residual variance in local neighborhoods
-- **Oppositeness**: Distance from sign-flipped PCA projection to nearest real point
+### Figures
+| File | Description |
+|------|-------------|
+| `results/v3/multi_model/figures/multi_model_risk_manifolds.png` | Grid of UMAP plots (universality proof) |
+| `results/v3/multi_model/figures/consistency_heatmap.png` | Model correlation matrix |
+| `results/v2/figures/risk_manifold_umap.png` | Single-model risk manifold |
+| `results/v2/figures/feature_importance.png` | Geometry feature importance |
+
+### Data
+| File | Description |
+|------|-------------|
+| `results/v3/multi_model/all_models_results.csv` | Master dataset (5,380 rows) |
+| `results/v3/multi_model/stats/kendall_tau_matrix.csv` | Pairwise model correlation |
+| `data/processed/geometry_features.csv` | Geometric features for all prompts |
+
+---
+
+## 🧪 Experimental Design
+
+### Dataset (538 Prompts)
+- **Factual** (98): "What is the capital of France?"
+- **Nonexistent** (120): "Who is the CEO of FizzCorp?"
+- **Impossible** (30): "What is the 10th digit of π?"
+- **Ambiguous** (120): "What is the best color?"
+
+### Models Tested
+- OpenAI: GPT-5.1, GPT-4.1, GPT-4.1-mini, GPT-4o-mini
+- Anthropic: Claude Opus 4.5, Sonnet 4.5, Haiku 4.5
+- Together AI: Llama 4 Maverick, Mixtral 8x7B, Qwen 3 Next
+
+### Judging System
+- **Consensus Panel**: GPT-5.1 + Claude Opus 4.5 + Llama 4
+- **Method**: Majority vote (2/3 agreement)
+- **Rubric**: 0=Correct, 1=Partial, 2=Hallucinated, 3=Refused
+
+### Geometric Features
+- **Local Intrinsic Dimensionality**: TwoNN estimator
+- **Curvature Score**: PCA residual variance
+- **Density**: k-NN local density
+- **Centrality**: Distance to global centroid
+
+---
+
+## 📚 Documentation
+
+- **[Experiment Guide](docs/EXPERIMENT_GUIDE.md)**: Comprehensive documentation (methodology, outputs, analysis plan)
+- **[Quick Start](docs/QUICKSTART.md)**: Fast reference for common tasks
+
+---
+
+## 🔧 Troubleshooting
+
+### "API key not set"
+```bash
+export OPENAI_API_KEY="sk-..."
+export ANTHROPIC_API_KEY="sk-ant-..."
+export TOGETHER_API_KEY="..."
+```
+
+### "Results file not found"
+Wait for the multi-model experiment to finish before running analysis.
+
+### "Module not found: statsmodels"
+```bash
+pip install statsmodels
+```
+
+---
+
+## 📄 Citation
+
+If you use this work, please cite:
+
+```bibtex
+@article{manifold-bends-2024,
+  title={Manifold Bends, Model Lies: Geometric Predictors of LLM Hallucinations},
+  author={[Your Name]},
+  year={2024}
+}
+```
+
+---
+
+## 📝 License
+
+MIT License - see LICENSE file for details.
+
+---
 
 ## 🤝 Contributing
 
-This is a research project. To extend it:
+This is a research project. For questions or collaboration, please open an issue.
 
-1. Add more benchmark questions in `src/pipeline/build_benchmark.py`
-2. Implement additional geometric metrics in `src/geometry/`
-3. Try different models by updating the config
-4. Add new analysis methods in `src/evaluation/`
+---
 
-## 📄 License
-
-This project is provided for research purposes.
-
-## 🙏 Acknowledgments
-
-Mohamed Zidan Cassim (for making this experiment)
-
-**For questions or issues, please open an issue on GitHub.**
+**Last Updated**: December 2024

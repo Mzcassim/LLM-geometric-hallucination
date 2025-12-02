@@ -2,6 +2,7 @@
 
 import time
 import json
+import os
 from typing import Any, Optional
 from openai import OpenAI
 
@@ -35,26 +36,43 @@ class JudgeClient:
     def __init__(
         self,
         model_name: str = "gpt-4o-mini",
-        client: Any = None,
+        provider: str = "openai",
         max_retries: int = 3,
         timeout: int = 60,
-        temperature: float = 0.0  # Use deterministic evaluation
+        temperature: float = 0.0
     ):
         """
         Initialize judge client.
         
         Args:
             model_name: Name of the judge model
-            client: OpenAI client instance (or None to create default)
+            provider: 'openai', 'anthropic', or 'together'
             max_retries: Maximum number of retry attempts
             timeout: Request timeout in seconds
-            temperature: Sampling temperature (0 for deterministic)
+            temperature: Sampling temperature
         """
         self.model_name = model_name
-        self.client = client if client is not None else OpenAI()
+        self.provider = provider.lower()
         self.max_retries = max_retries
         self.timeout = timeout
         self.temperature = temperature
+        
+        # Initialize provider-specific client
+        if self.provider == 'openai':
+            from openai import OpenAI
+            self.client = OpenAI(timeout=timeout)
+        elif self.provider == 'anthropic':
+            from anthropic import Anthropic
+            self.client = Anthropic(timeout=timeout)
+        elif self.provider == 'together':
+            from openai import OpenAI
+            self.client = OpenAI(
+                api_key=os.environ.get('TOGETHER_API_KEY'),
+                base_url='https://api.together.xyz/v1',
+                timeout=timeout
+            )
+        else:
+            raise ValueError(f"Unknown provider: {provider}")
     
     def judge(
         self,
@@ -83,18 +101,38 @@ class JudgeClient:
         
         for attempt in range(self.max_retries):
             try:
-                response = self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=[
-                        {"role": "system", "content": JUDGE_SYSTEM_PROMPT},
-                        {"role": "user", "content": user_content}
-                    ],
-                    temperature=self.temperature,
-                    timeout=self.timeout,
-                    response_format={"type": "json_object"}
-                )
+                if self.provider in ['openai', 'together']:
+                    response = self.client.chat.completions.create(
+                        model=self.model_name,
+                        messages=[
+                            {"role": "system", "content": JUDGE_SYSTEM_PROMPT},
+                            {"role": "user", "content": user_content}
+                        ],
+                        temperature=self.temperature,
+                        timeout=self.timeout,
+                        response_format={"type": "json_object"}
+                    )
+                    result_text = response.choices[0].message.content
+                    
+                elif self.provider == 'anthropic':
+                    response = self.client.messages.create(
+                        model=self.model_name,
+                        system=JUDGE_SYSTEM_PROMPT,
+                        messages=[
+                            {"role": "user", "content": user_content + "\n\nRespond in JSON."}
+                        ],
+                        temperature=self.temperature,
+                        max_tokens=1000,
+                        timeout=self.timeout
+                    )
+                    result_text = response.content[0].text
                 
-                result_text = response.choices[0].message.content
+                # Parse JSON
+                start = result_text.find('{')
+                end = result_text.rfind('}') + 1
+                if start != -1 and end != -1:
+                    result_text = result_text[start:end]
+                
                 result = json.loads(result_text)
                 
                 # Validate the result has required fields

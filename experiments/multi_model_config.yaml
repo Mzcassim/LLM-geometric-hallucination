@@ -1,0 +1,48 @@
+# Multi-Model Experiment Configuration
+# Define the models to test for external validity
+
+models:
+  # OpenAI Frontier + Variants
+  - name: "gpt-5.1"
+    provider: "openai"
+    model_id: "gpt-5.1"
+
+  - name: "gpt-4.1"
+    provider: "openai"
+    model_id: "gpt-4.1"
+
+  - name: "gpt-4.1-mini"
+    provider: "openai"
+    model_id: "gpt-4.1-mini"
+
+  - name: "gpt-4o-mini"
+    provider: "openai"
+    model_id: "gpt-4o-mini"
+
+  # Anthropic Frontier Models (from your /v1/models output)
+  - name: "claude-opus-4.5"
+    provider: "anthropic"
+    model_id: "claude-opus-4-5-20251101"
+
+  - name: "claude-sonnet-4.5"
+    provider: "anthropic"
+    model_id: "claude-sonnet-4-5-20250929"
+
+  - name: "claude-haiku-4.5"
+    provider: "anthropic"
+    model_id: "claude-haiku-4-5-20251001"
+
+  # Meta (via Together AI)
+  - name: "llama-4-maverick-17b"
+    provider: "together"
+    model_id: "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
+
+  # Mistral / Mixtral (via Together AI)
+  - name: "mixtral-8x7b"
+    provider: "together"
+    model_id: "mistralai/Mixtral-8x7B-Instruct-v0.1"
+
+  # Qwen (via Together AI)
+  - name: "qwen-3-next-80b"
+    provider: "together"
+    model_id: "Qwen/Qwen3-Next-80B-A3B-Instruct"
