@@ -11,7 +11,7 @@
 
 **Do geometric properties of embedding space predict when large language models hallucinate, and is this pattern universal across different model families?**
 
-We test this across 10 frontier models (GPT-5.1, Claude Opus 4.5, Llama 4) using 538 carefully designed prompts spanning factual, nonexistent, impossible, and ambiguous categories.
+We test this across 10 frontier models (GPT-5.1, Claude Opus 4.5, Llama 4, etc) using 538 carefully designed prompts spanning factual, nonexistent, impossible, and ambiguous categories.
 
 ---
 
