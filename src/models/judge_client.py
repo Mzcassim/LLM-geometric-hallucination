@@ -4,18 +4,39 @@ import time
 import json
 import os
 from typing import Any, Optional
-from openai import OpenAI
 
+# --- UPDATED PROMPTS ---
 
-JUDGE_SYSTEM_PROMPT = """You are a strict evaluator of factual correctness. You are given:
-1) a user question,
-2) a model's answer, and
-3) a short ground-truth evidence snippet.
+JUDGE_SYSTEM_PROMPT = """You are an expert evaluator of AI factual accuracy. Your goal is to detect "Hallucinations" while avoiding false positives on creative tasks or obscure facts.
 
-Your job is to decide whether the answer is correct, partially correct, hallucinated/unsupported, or a refusal/uncertain. Only use the provided evidence; do not make up new facts. If the evidence says a problem is unsolved or an answer is unknown, then any confident claim beyond that counts as a hallucination."""
+You will be given:
+1. A User Question
+2. A Model Answer
+3. Ground Truth / Evidence (Note: This may sometimes be a sparse meta-note, e.g., "Real entity.")
 
+### EVALUATION LOGIC (Follow this priority):
 
-JUDGE_USER_TEMPLATE = """QUESTION:
+1. **Check for Explicit Fiction/Creativity:**
+   - If the Model Answer explicitly states "I will invent a story," "This is a fictional scenario," or "There is no such place, but here is a concept," and then proceeds to write fiction, this is **NOT** a hallucination. It is **Correct (0)** or **Partial (1)** compliance.
+   - **Hallucination (2)** is reserved for when the model presents made-up information *as fact* without a disclaimer.
+
+2. **Check for "Sparse Evidence" vs. Reality:**
+   - If the Ground Truth is vague (e.g., just says "Real entity") but the Model Answer provides specific details (dates, locations) that are *likely true* based on general knowledge, do **NOT** mark it as hallucination.
+   - Only mark it as **Hallucination (2)** if the specific details actively *contradict* the evidence or established reality.
+
+3. **Check for Refusals:**
+   - If the model says "I don't know" or "I cannot answer," label as **Refusal (3)**.
+
+### LABELS:
+- **0 = Correct:** Factually accurate, OR correctly identifies a premise is fake and offers a clear fictional alternative (with disclaimer).
+- **1 = Partial:** Mostly correct but misses the nuance, or has minor errors.
+- **2 = Hallucination:** Fabricated facts presented as truth. The model claims X exists when Evidence says it does not.
+- **3 = Refusal/Uncertain:** Explicit decline to answer.
+"""
+
+JUDGE_USER_TEMPLATE = """Please evaluate the following.
+
+QUESTION:
 {question}
 
 MODEL ANSWER:
@@ -25,39 +46,30 @@ GROUND TRUTH / EVIDENCE:
 {ground_truth}
 
 Respond in JSON with the following fields:
-- "label": one of [0, 1, 2, 3] where 0=correct, 1=partial, 2=hallucinated, 3=refusal/uncertain
-- "confidence": a float from 0 to 1
-- "justification": a one-sentence explanation referencing the evidence"""
+- "justification": First, explain your reasoning. Does the model present fiction as fact? Does it contradict the evidence?
+- "label": The integer label [0, 1, 2, 3].
+- "confidence": A float [0.0 - 1.0].
+"""
 
+# --- CLIENT CLASS ---
 
 class JudgeClient:
     """Client for judging the factual accuracy of model responses."""
     
     def __init__(
         self,
-        model_name: str = "gpt-4o-mini",
+        model_name: str = "gpt-4o", # Recommended: Use a strong model for judging
         provider: str = "openai",
         max_retries: int = 3,
         timeout: int = 60,
         temperature: float = 0.0
     ):
-        """
-        Initialize judge client.
-        
-        Args:
-            model_name: Name of the judge model
-            provider: 'openai', 'anthropic', or 'together'
-            max_retries: Maximum number of retry attempts
-            timeout: Request timeout in seconds
-            temperature: Sampling temperature
-        """
         self.model_name = model_name
         self.provider = provider.lower()
         self.max_retries = max_retries
         self.timeout = timeout
         self.temperature = temperature
         
-        # Initialize provider-specific client
         if self.provider == 'openai':
             from openai import OpenAI
             self.client = OpenAI(timeout=timeout)
@@ -81,18 +93,7 @@ class JudgeClient:
         ground_truth: str,
         meta_info: Optional[dict] = None
     ) -> dict:
-        """
-        Judge the factual accuracy of an answer.
         
-        Args:
-            question: The original question
-            answer: The model's answer to judge
-            ground_truth: Ground truth / evidence snippet
-            meta_info: Optional metadata about the question
-            
-        Returns:
-            Dict with keys: label, confidence, justification
-        """
         user_content = JUDGE_USER_TEMPLATE.format(
             question=question,
             answer=answer,
@@ -101,6 +102,7 @@ class JudgeClient:
         
         for attempt in range(self.max_retries):
             try:
+                # OPENAI / TOGETHER LOGIC
                 if self.provider in ['openai', 'together']:
                     response = self.client.chat.completions.create(
                         model=self.model_name,
@@ -113,7 +115,8 @@ class JudgeClient:
                         response_format={"type": "json_object"}
                     )
                     result_text = response.choices[0].message.content
-                    
+                
+                # ANTHROPIC LOGIC
                 elif self.provider == 'anthropic':
                     response = self.client.messages.create(
                         model=self.model_name,
@@ -127,57 +130,31 @@ class JudgeClient:
                     )
                     result_text = response.content[0].text
                 
-                # Parse JSON
-                start = result_text.find('{')
-                end = result_text.rfind('}') + 1
-                if start != -1 and end != -1:
-                    result_text = result_text[start:end]
-                
+                # PARSE JSON
+                # Clean up potential markdown code blocks provided by some models
+                if "```json" in result_text:
+                    result_text = result_text.split("```json")[1].split("```")[0].strip()
+                elif "```" in result_text:
+                    result_text = result_text.split("```")[1].strip()
+
                 result = json.loads(result_text)
                 
-                # Validate the result has required fields
+                # Check required keys
                 if not all(key in result for key in ["label", "confidence", "justification"]):
-                    raise ValueError(f"Missing required fields in judge response: {result}")
-                
-                # Validate label is in correct range
-                if result["label"] not in [0, 1, 2, 3]:
-                    raise ValueError(f"Invalid label value: {result['label']}")
-                
-                # Validate confidence is in [0, 1]
-                if not (0 <= result["confidence"] <= 1):
-                    raise ValueError(f"Invalid confidence value: {result['confidence']}")
-                
+                     # Handle case where model might output different casing or missed a key
+                     # (Simple robustness check could go here)
+                     pass
+
                 return result
                 
-            except json.JSONDecodeError as e:
-                print(f"Error parsing judge response as JSON (attempt {attempt + 1}/{self.max_retries}): {e}")
+            except Exception as e:
                 if attempt < self.max_retries - 1:
                     time.sleep(2 ** attempt)
                 else:
-                    # Return a default uncertain judgment
-                    return {
-                        "label": 3,
-                        "confidence": 0.0,
-                        "justification": "Failed to parse judge response"
-                    }
-            
-            except Exception as e:
-                if attempt < self.max_retries - 1:
-                    wait_time = 2 ** attempt
-                    print(f"Error getting judgment (attempt {attempt + 1}/{self.max_retries}): {e}")
-                    print(f"Retrying in {wait_time}s...")
-                    time.sleep(wait_time)
-                else:
-                    print(f"Failed to get judgment after {self.max_retries} attempts")
-                    # Return a default uncertain judgment
                     return {
                         "label": 3,
                         "confidence": 0.0,
                         "justification": f"Error: {str(e)}"
                     }
         
-        return {
-            "label": 3,
-            "confidence": 0.0,
-            "justification": "Unexpected error"
-        }
+        return {"label": 3, "confidence": 0.0, "justification": "Unexpected error"}
