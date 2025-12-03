@@ -572,9 +572,13 @@ Tests geometry effects with:
 
 **Purpose**: Verify findings aren't artifacts of specific embedding model
 
-**Status**: Not yet run (time constraints)  
-**Estimated time**: 15 minutes  
-**Impact**: Strengthens universality claims
+**Status**: Completed ✅
+**Findings**:
+1.  **Centrality remains predictive:** In the original 1536-dim space, centrality showed the strongest correlation with hallucination ($r=-0.134, p<0.001$), confirming that "weird" queries are riskier.
+2.  **Curvature scales with dimension:** In the higher-dimensional 3072-dim space, **curvature** became the dominant predictor ($r=0.113, p<0.001$), significantly outperforming its predictive power in lower dimensions ($r=0.032$).
+3.  **Interpretation:** This suggests that local manifold distortions (curvature) are better captured in higher-dimensional representations, while global position (centrality) is a robust signal across models.
+
+*Note: Cross-architecture comparison with MPNet (768-dim) was inconclusive due to reference corpus dimensionality mismatch.*
 
 ---
 

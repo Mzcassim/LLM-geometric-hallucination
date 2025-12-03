@@ -1,0 +1,10 @@
+embedding_model,geometry_feature,correlation,p_value
+text-embedding-3-small (Original),curvature_score,0.032007076896915045,0.052199696492653484
+text-embedding-3-small (Original),density,0.06485223687262005,8.252735584424713e-05
+text-embedding-3-small (Original),centrality,-0.13431413201416198,2.7863865947593877e-16
+text-embedding-3-large,curvature_score,0.12848968303771532,3.0333787503241108e-21
+text-embedding-3-large,density,0.001180932599198085,0.930989849298593
+text-embedding-3-large,centrality,-0.07568957797149158,2.7225875651301072e-08
+all-mpnet-base-v2 (Open Source),curvature_score,0.008415586297608748,0.5371437160970481
+all-mpnet-base-v2 (Open Source),density,0.015521141143986433,0.2550135250166139
+all-mpnet-base-v2 (Open Source),centrality,-0.16198654797572457,5.9136561353894364e-33

@@ -16,7 +16,11 @@ import seaborn as sns
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.geometry.compute_features import compute_geometry_features
+from src.geometry.curvature import compute_curvature_proxy
+from src.geometry.density import compute_local_density
+from src.geometry.centrality import compute_distance_to_center
+from src.geometry.intrinsic_dimension import compute_local_id_for_all
+from src.geometry.reference_corpus import load_reference_corpus
 
 
 def load_embeddings(embedding_file):
@@ -24,13 +28,99 @@ def load_embeddings(embedding_file):
     return np.load(embedding_file)
 
 
+def compute_geometry_features(embeddings, reference_corpus_path="data/reference_corpus", custom_reference=None):
+    """Compute geometry features for the given embeddings."""
+    print(f"    Computing geometry features for {len(embeddings)} embeddings...")
+    
+    # Load reference corpus
+    if custom_reference:
+        print("      Using custom reference corpus (matched dimensionality)")
+        ref_embeddings = custom_reference['embeddings']
+        ref_mean = custom_reference['mean']
+    else:
+        ref_corpus = load_reference_corpus(Path(reference_corpus_path))
+        ref_embeddings = ref_corpus['embeddings']
+        ref_mean = ref_corpus['mean']
+    
+    n_samples = len(embeddings)
+    
+    # First compute local IDs (needed for curvature)
+    print("      Computing local intrinsic dimensions...")
+    local_ids = compute_local_id_for_all(embeddings, n_neighbors=20, metric='cosine')
+    
+    # Initialize features
+    features = {
+        'curvature_score': np.zeros(n_samples),
+        'density': np.zeros(n_samples),
+        'centrality': np.zeros(n_samples)
+    }
+    
+    # Compute curvature using local IDs
+    print("      Computing curvature...")
+    try:
+        features['curvature_score'] = compute_curvature_proxy(
+            embeddings, 
+            local_ids, 
+            n_neighbors=20, 
+            metric='cosine'
+        )
+    except Exception as e:
+        print(f"      Warning: Curvature computation failed: {e}")
+        features['curvature_score'] = np.full(n_samples, np.nan)
+    
+    # Compute density
+    print("      Computing density...")
+    try:
+        features['density'] = compute_local_density(
+            embeddings, 
+            ref_embeddings, 
+            k=20, 
+            metric='cosine'
+        )
+    except Exception as e:
+        print(f"      Warning: Density computation failed: {e}")
+        features['density'] = np.full(n_samples, np.nan)
+    
+    # Compute centrality
+    print("      Computing centrality...")
+    try:
+        features['centrality'] = compute_distance_to_center(
+            embeddings, 
+            ref_mean, 
+            metric='cosine'
+        )
+    except Exception as e:
+        print(f"      Warning: Centrality computation failed: {e}")
+        features['centrality'] = np.full(n_samples, np.nan)
+    
+    # Return as DataFrame
+    return pd.DataFrame(features)
+
+
 def compute_correlation(results_df, geometry_feature='curvature_score'):
     """Compute Spearman correlation between geometry and hallucination."""
-    correlation, p_value = stats.spearmanr(
-        results_df[geometry_feature],
-        results_df['is_hallucinated']
-    )
-    return correlation, p_value
+    try:
+        # Extract values as arrays to avoid index issues
+        geom_vals = results_df[geometry_feature].values
+        hall_vals = results_df['is_hallucinated'].values
+        
+        # Remove NaN values
+        valid_mask = ~(pd.isna(geom_vals) | pd.isna(hall_vals))
+        geom_valid = geom_vals[valid_mask]
+        hall_valid = hall_vals[valid_mask]
+        
+        if len(geom_valid) < 10:
+            return np.nan, 1.0
+        
+        correlation, p_value = stats.spearmanr(
+            geom_valid,
+            hall_valid,
+            nan_policy='omit'
+        )
+        return correlation, p_value
+    except Exception as e:
+        print(f"      Warning: Correlation computation failed: {e}")
+        return np.nan, 1.0
 
 
 def analyze_robustness(original_results, alternative_embeddings_dir, output_dir):
@@ -40,6 +130,28 @@ def analyze_robustness(original_results, alternative_embeddings_dir, output_dir)
     
     # Load original results (from V2 or V3)
     df = pd.read_csv(original_results)
+    
+    # Deduplicate by id and model_name, keep first occurrence
+    if 'id' in df.columns and 'model_name' in df.columns:
+        df = df.drop_duplicates(subset=['id', 'model_name'], keep='first')
+    elif 'id' in df.columns:
+        df = df.drop_duplicates(subset=['id'], keep='first')
+    
+    # Reset index to avoid duplicate index issues
+    df = df.reset_index(drop=True)
+    
+    print(f"Loaded {len(df)} unique samples for robustness analysis\n")
+    
+    # Load prompts to get IDs (crucial for alignment)
+    import json
+    prompts_file = "data/prompts/prompts.jsonl"
+    prompt_ids = []
+    with open(prompts_file, 'r') as f:
+        for line in f:
+            if line.strip():
+                prompt_ids.append(json.loads(line)['id'])
+    
+    print(f"Loaded {len(prompt_ids)} prompt IDs for alignment")
     
     # Models to test
     embedding_models = [
@@ -73,12 +185,48 @@ def analyze_robustness(original_results, alternative_embeddings_dir, output_dir)
         embeddings = load_embeddings(model_info['file'])
         print(f"  Loaded embeddings: {embeddings.shape}")
         
+        if len(embeddings) != len(prompt_ids):
+            print(f"  Warning: Embedding count ({len(embeddings)}) != Prompt count ({len(prompt_ids)})")
+            # Truncate to match
+            min_len = min(len(embeddings), len(prompt_ids))
+            embeddings = embeddings[:min_len]
+            current_ids = prompt_ids[:min_len]
+        else:
+            current_ids = prompt_ids
+            
+        # Determine reference corpus
+        custom_ref = None
+        if 'Original' not in model_info['name']:
+            # For alternative models, use the embeddings themselves as reference
+            # to avoid dimensionality mismatch
+            print("  Generating self-reference stats for alternative model...")
+            custom_ref = {
+                'embeddings': embeddings,
+                'mean': np.mean(embeddings, axis=0)
+            }
+            
         # Compute geometry
         print("  Computing geometry features...")
-        geometry_df = compute_geometry_features(embeddings)
+        geometry_df = compute_geometry_features(embeddings, custom_reference=custom_ref)
         
-        # Merge with hallucination labels
-        merged_df = df.merge(geometry_df, left_on='id', right_index=True, how='left')
+        # Add IDs to geometry dataframe
+        geometry_df['id'] = current_ids
+        
+        # Ensure ID types match for merge
+        geometry_df['id'] = geometry_df['id'].astype(str)
+        if 'id' in df.columns:
+            df['id'] = df['id'].astype(str)
+            
+        # Drop existing geometry columns from df to avoid duplicates
+        cols_to_drop = [col for col in ['curvature_score', 'density', 'centrality'] if col in df.columns]
+        if cols_to_drop:
+            df_clean = df.drop(columns=cols_to_drop)
+        else:
+            df_clean = df
+            
+        # Merge on ID
+        merged_df = df_clean.merge(geometry_df, on='id', how='inner')
+        print(f"  Merged data: {len(merged_df)} rows (from {len(df)} results and {len(geometry_df)} embeddings)")
         
         # Compute correlations for each feature
         for feature in ['curvature_score', 'density', 'centrality']:
