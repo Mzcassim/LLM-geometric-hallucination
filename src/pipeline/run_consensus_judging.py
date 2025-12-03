@@ -71,7 +71,10 @@ def run_consensus_judging(input_dir, output_dir):
                     "judge_label": judgment["label"],
                     "judge_confidence": judgment["confidence"],
                     "judge_justification": judgment["justification"],
-                    "judge_model": "consensus_panel"
+                    "judge_model": "consensus_panel",
+                    "individual_judgments": judgment["individual_judgments"],
+                    "agreement_rate": judgment["agreement_rate"],
+                    "individual_confidence_avg": judgment["individual_confidence_avg"]
                 }
                 results.append(result)
                 

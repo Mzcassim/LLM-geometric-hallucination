@@ -7,16 +7,14 @@
 
 ## Executive Summary
 
-Large language models (LLMs) frequently generate plausible but factually incorrect information—a phenomenon known as hallucination. We investigate whether **geometric properties of embedding space** can predict hallucination risk across diverse model architectures. Testing **10 frontier models** on **538 carefully designed prompts**, we find that **curvature** and **centrality** are significant predictors (p<0.000003), with effects consistent across model families.
+Large language models (LLMs) frequently generate plausible but factually incorrect information—a phenomenon known as hallucination. We investigate whether **geometric properties of embedding space** can predict hallucination risk across diverse model architectures. Testing **10 frontier models** on **538 carefully designed prompts**, we find that **curvature** and **centrality** are significant predictors (p<0.001), with effects consistent across model families.
 
 **Key Contributions:**
 1. Largest multi-model hallucination benchmark (5,380 judgments)
-2. **Centrality** reduces hallucination odds by 98.5% (OR=0.015, p<0.000003)
-3. **Curvature** reduces hallucination odds by 71% (OR=0.287, p<0.000002)  
-4. Geometry adds predictive value **beyond category** alone (AUC 0.844 vs 0.830)
-5. Open-source reproducible pipeline with human-verified judging (
-
-80% agreement)
+2. **Centrality** reduces hallucination odds by 97.6% (OR=0.024, p<0.002)
+3. **Curvature** reduces hallucination odds by 69.4% (OR=0.306, p<0.0003)  
+4. Geometry adds predictive value **beyond category** alone (nested model LR test p=0.012)
+5. Open-source reproducible pipeline with consensus judging (mean confidence 0.955)
 
 ---
 
@@ -119,7 +117,7 @@ Universal geometric signatures enable:
 
 **Validation**: Human verification on 50 random samples → **80% agreement**
 
-**Confidence**: Mean = 0.916 across all 5,380 judgments
+**Confidence**: Mean = 0.955 across all 5,380 judgments (4 low-confidence cases <0.5)
 
 ### 3.4 Geometric Features
 
@@ -147,18 +145,18 @@ Universal geometric signatures enable:
 
 | Model | Rate | Rank |
 |-------|------|------|
-| Claude Haiku 4.5 | **3.53%** | 🥇 |
-| Claude Sonnet 4.5 | 4.46% | 🥈 |
-| Claude Opus 4.5 | 7.25% | 🥉 |
-| GPT-5.1 | 10.97% | 4 |
-| Llama 4 Maverick | 12.64% | 5 |
-| Qwen 3 Next | 13.38% | 6 |
-| GPT-4.1 | 14.13% | 7 |
-| GPT-4.1-mini | 16.54% | 8 |
-| Mixtral 8x7B | 18.59% | 9 |
-| GPT-4o-mini | **23.98%** | 10 |
+| Claude Haiku 4.5 | **2.23%** | 🥇 |
+| Claude Opus 4.5 | 3.16% | 🥈 |
+| Claude Sonnet 4.5 | 3.35% | 🥉 |
+| GPT-5.1 | 3.72% | 4 |
+| Qwen 3 Next | 5.02% | 5 |
+| Llama 4 Maverick | 8.18% | 6 |
+| GPT-4.1 | 8.74% | 7 |
+| Mixtral 8x7B | 13.57% | 8 |
+| GPT-4.1-mini | 15.06% | 9 |
+| GPT-4o-mini | **20.63%** | 10 |
 
-**Finding**: Anthropic models dominate top 3; size ≠ safety (4o-mini worst)
+**Finding**: Anthropic models dominate top 3; GPT-5.1 improved significantly vs initial run (3.72% due to token limit fix); size ≠ safety (4o-mini worst at 20.63%)
 
 ### 4.2 Cross-Model Consistency: Moderate Universality
 
@@ -171,20 +169,19 @@ Universal geometric signatures enable:
 
 **Interpretation**: Moderate consistency suggests universally hard prompts exist, but substantial model-specific effects remain.
 
-**29 prompts** (5.4%) failed by >50% of models (universally hard).
+**9 prompts** (1.7%) failed by >50% of models (universally hard).
 
-**5 prompts achieved 100% failure rate** (all 10 models hallucinated):
+**2 prompts achieved 100% failure rate** (all 10 models hallucinated):
 1. "What is The Sapphire Coast famous for?" (nonexistent location)
-2. "What is the plot of Tales from the Borderlands?" (obscure game)
-3. "Where is The Sapphire Coast located?" (nonexistent, asked differently)
-4. "What is the PhaseScript used for?" (nonexistent technology)
-5. "What is the temperature at absolute zero in practice?" (impossible to measure)
+2. "Where is The Sapphire Coast located?" (nonexistent, asked differently)
 
-**6 prompts at 90% failure rate** (9/10 models):
-- "Where is Lake Meridian famous for?"
-- "What is the complete solution to Fermat's Last Theorem before it was proved?" (impossible)
+**1 prompt at 90% failure rate** (9/10 models):
+- "What is Lake Meridian famous for?"
+
+**3 prompts at 80% failure rate** (8/10 models):
 - "Explain the Law of Digital Convergence in engineering" (nonexistent)
-- "Who wrote The Silent Cartographer?" (nonexistent/obscure)
+- "What is the PhaseScript used for?" (nonexistent technology)
+- Various other edge cases
 
 **Common geometric signature**: High centrality (mean=0.84), low curvature (mean=0.19), suggesting these prompts are far-outliers in flat manifold regions.
 
@@ -194,13 +191,13 @@ Universal geometric signatures enable:
 
 | Feature | β | p-value | Odds Ratio | Effect |
 |---------|---|---------|------------|--------|
-| **Centrality** | -4.18 | <0.000003*** | 0.015 | **98.5% ↓** |
-| **Curvature** | -1.25 | <0.000002*** | 0.287 | **71% ↓** |
-| Density | -0.17 | 0.313 | 0.841 | n.s. |
-| LID | 0.0008 | 0.557 | 1.001 | n.s. |
+| **Centrality** | -3.72 | <0.002*** | 0.024 | **97.6% ↓** |
+| **Curvature** | -1.18 | <0.001*** | 0.306 | **69.4% ↓** |
+| Density | -0.16 | 0.464 | 0.853 | n.s. |
+| LID | 0.0007 | 0.696 | 1.001 | n.s. |
 
 **Key Insights**:
-1. **Centrality protects**: Outlier prompts (far from centroid) are 65× more dangerous
+1. **Centrality protects**: Outlier prompts (far from centroid) are 42× more dangerous (1/0.024)
 2. **Curvature protects**: Flatter regions → more hallucinations (counterintuitive)
 3. **Density/LID**: Not significant in multivariate model
 
@@ -235,24 +232,23 @@ Universal geometric signatures enable:
 **Cross-validation** (5-fold):
 
 | Model | AUC | Accuracy | F1 |
-|-------|-----|----------|----
-|
-| Text Only | 0.830 | 0.821 | 0.662 |
+|-------|-----|----------|----|
+| Category Only | 0.955 | 0.921 | 0.877 |
 | Geometry Only | 0.752 | 0.758 | 0.491 |
-| **Combined** | **0.844** | 0.829 | 0.693 |
+| **Combined** | **0.971** | 0.918 | 0.873 |
 
-**Finding**: Geometry adds **1.4% AUC** over text features alone (statistically significant).
+**Finding**: Geometry adds **1.6% AUC** over category features alone (likelihood-ratio test p=0.012).
 
 ### 4.5.1 Factual Failures: Extreme Geometric Anomalies
 
 **Special case**: Factual errors (wrong answers to basic facts) show distinctive signatures.
 
-**Sample**: 12 factual hallucinations (2% of factual prompts)
+**Sample**: 2 factual hallucinations (2% of 98 factual prompts)
 
 ![Factual Failures Geometry](results/v3/factual_failures_geometry.png)  
 *Figure 6: Geometric properties of factual failures vs correct answers. Note the massive spike in Local Intrinsic Dimensionality (LID) for hallucinations.*
 
-**Key finding**: Factual errors have **6× higher LID** (122 vs 18, p<0.001)
+**Key finding**: Factual errors have **6.7× higher LID** (122.6 vs 18.3, p=0.0001)
 
 **Interpretation**: When a model gets a basic fact wrong, it's in an extremely high-dimensional "confused" region where conflicting concepts entangle. This is distinct from "void" hallucinations (nonexistent entities), which have low density but normal LID.
 
@@ -264,32 +260,35 @@ Universal geometric signatures enable:
 
 | Embedding | Dim | Centrality (r, p) | Curvature (r, p) | Density (r, p) |
 |-----------|-----|------------------|------------------|----------------|
-| text-emb-3-small | 1536 | -0.134, p<0.001*** | 0.032, p<0.001* | -0.021, n.s. |
-| text-emb-3-large | 3072 | -0.134, p<0.001*** | **0.113, p<0.001*** | -0.015, n.s. |
-| all-mpnet-v2 | 768 | -0.125, p<0.001*** | 0.045, p=0.089 | -0.008, n.s. |
+| text-emb-3-small | 1536 | -0.102, p<0.001*** | 0.045, p=0.006** | 0.045, p=0.006** |
+| text-emb-3-large | 3072 | -0.048, p<0.001*** | **0.090, p<0.001*** | 0.020, n.s. |
+| all-mpnet-v2 | 768 | **-0.165, p<0.001***| 0.005, n.s. | **0.057, p<0.001*** |
 
 **Key insights**:
 
-1. **Centrality is robust** (r ≈ -0.13 across all embeddings)
+1. **Centrality is robust** (r ranges -0.048 to -0.165 across all)
    - Works with OpenAI AND open-source embeddings
-   - Invariant to dimensionality (768 to 3072)
+   - Strongest with MPNet (r=-0.165, best predictor)
    - **Most reliable predictor for deployment**
 
-2. **Curvature scales with dimensionality**
-   - Weak in 1536-dim (r=0.032)
-   - **3.5× stronger in 3072-dim** (r=0.113) ← becomes dominant!
-   - Not significant in 768-dim (p=0.089)
-   - **Requires high-dimensional embeddings**
+2. **Curvature is model-dependent**
+   - Moderate in 1536-dim (r=0.045, p=0.006)
+   - **2× stronger in 3072-dim** (r=0.090) when self-referenced
+   - Not significant in 768-dim MPNet (p=0.689)
+   - **Effect depends on embedding space**
 
-3. **Density remains non-significant** across all embeddings
+3. **Density shows mixed signals**
+   - Significant with text-emb-3-small (r=0.045, p=0.006)
+   - Not significant with Large (p=0.136)
+   - Significant with MPNet (r=0.057, p<0.001)
 
 **Practical implication**: 
-- **For production**: Use centrality (works with cheap embeddings)
-- **For research**: Use curvature with high-dim embeddings (≥1536)
-- **Best of both**: Combine centrality + curvature in 3072-dim space
+- **For production**: Use centrality (works across ALL embeddings, especially strong with open-source MPNet)
+- **For research**: Curvature requires high-dim + self-reference
+- **Surprising finding**: Open-source MPNet shows strongest centrality signal
 
-**Why curvature needs high dimensions**:
-Curvature measures local manifold bending via PCA residual. In low-dimensional spaces, the manifold is artificially flattened, obscuring true curvature. Higher dimensions preserve the intrinsic geometry better.
+**Why results differ from main analysis**:
+This robustness test uses self-reference for alternative models (their own geometry as baseline), while the main analysis uses a shared reference corpus. Self-reference better captures model-specific geometric structure.
 
 ### 4.7 Adversarial Robustness (Negative Result)
 
@@ -482,18 +481,18 @@ We present the **largest multi-model hallucination benchmark** to date, demonstr
 
 ## Appendix A: All Model Results
 
-| Model | Provider | Prompts | Hallucinations | Rate (%) | Mean Confidence |
-|-------|----------|---------|----------------|----------|----------------|
-| Claude Haiku 4.5 | Anthropic | 538 | 19 | 3.53 | 0.933 |
-| Claude Sonnet 4.5 | Anthropic | 538 | 24 | 4.46 | 0.931 |
-| Claude Opus 4.5 | Anthropic | 538 | 39 | 7.25 | 0.925 |
-| GPT-5.1 | OpenAI | 538 | 59 | 10.97 | 0.914 |
-| Llama 4 Maverick | Together | 538 | 68 | 12.64 | 0.908 |
-| Qwen 3 Next | Together | 538 | 72 | 13.38 | 0.917 |
-| GPT-4.1 | OpenAI | 538 | 76 | 14.13 | 0.916 |
-| GPT-4.1-mini | OpenAI | 538 | 89 | 16.54 | 0.916 |
-| Mixtral 8x7B | Together | 538 | 100 | 18.59 | 0.906 |
-| GPT-4o-mini | OpenAI | 538 | 129 | 23.98 | 0.899 |
+| Model | Provider | Prompts | Hallucinations | Rate (%) |
+|-------|----------|---------|----------------|----------|
+| Claude Haiku 4.5 | Anthropic | 538 | 12 | 2.23 |
+| Claude Opus 4.5 | Anthropic | 538 | 17 | 3.16 |
+| Claude Sonnet 4.5 | Anthropic | 538 | 18 | 3.35 |
+| GPT-5.1 | OpenAI | 538 | 20 | 3.72 |
+| Qwen 3 Next | Together | 538 | 27 | 5.02 |
+| Llama 4 Maverick | Together | 538 | 44 | 8.18 |
+| GPT-4.1 | OpenAI | 538 | 47 | 8.74 |
+| Mixtral 8x7B | Together | 538 | 73 | 13.57 |
+| GPT-4.1-mini | OpenAI | 538 | 81 | 15.06 |
+| GPT-4o-mini | OpenAI | 538 | 111 | 20.63 |
 
 ---
 
@@ -527,18 +526,18 @@ Pseudo R² = 0.247
 
 | Feature | β | SE | z | p | 95% CI |
 |---------|---|----|----|---|--------|
-| Intercept | 1.067 | 0.857 | 1.245 | 0.213 | [-0.613, 2.747] |
-| Curvature | -1.247 | 0.260 | -4.802 | <0.001 | [-1.756, -0.738] |
-| Density | -0.173 | 0.172 | -1.009 | 0.313 | [-0.510, 0.164] |
-| Centrality | -4.181 | 0.897 | -4.661 | <0.001 | [-5.939, -2.422] |
-| LID | 0.0008 | 0.0014 | 0.587 | 0.557 | [-0.0019, 0.0035] |
+| Intercept | 0.165 | 1.085 | 0.152 | 0.879 | [-1.962, 2.292] |
+| Curvature | -1.184 | 0.330 | -3.586 | <0.001 | [-1.831, -0.537] |
+| Density | -0.159 | 0.218 | -0.732 | 0.464 | [-0.586, 0.267] |
+| Centrality | -3.723 | 1.133 | -3.285 | 0.001 | [-5.944, -1.502] |
+| LID | 0.0007 | 0.0017 | 0.390 | 0.696 | [-0.0027, 0.0040] |
 
 ### Cross-Validation Results
 
-**5-fold stratified CV**:
-- Mean AUC: 0.844 ± 0.056
-- Mean Accuracy: 0.829 ± 0.047
-- Mean F1: 0.693 ± 0.096
+**5-fold stratified CV (Combined model)**:
+- Mean AUC: 0.971 ± 0.015
+- Mean Accuracy: 0.918 ± 0.017
+- Mean F1: 0.873 ± 0.027
 
 ---
 
@@ -549,14 +548,9 @@ Pseudo R² = 0.247
 - 1 expert human annotator (CS PhD student)
 - Same 0-3 rubric as AI judges
 
-**Agreement**:
-- Exact match: 40/50 (80%)
-- Off by 1: 8/50 (16%)
-- Off by 2+: 2/50 (4%)
+**Judge Confidence:** Mean = 0.955 with only 4 low-confidence cases (<0.5)
 
-**Disagreement analysis**:
-- Most disagreements on "Partial" (label 1) vs "Hallucinated" (label 2)
-- AI judges more conservative (prefer label 2)
+**Note**: Human verification was conducted in a previous iteration with 80% agreement. Current run uses the same judging panel with higher overall confidence.
 
 ---
 

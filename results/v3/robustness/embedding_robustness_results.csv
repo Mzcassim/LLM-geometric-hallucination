@@ -1,10 +1,10 @@
 embedding_model,geometry_feature,correlation,p_value
-text-embedding-3-small (Original),curvature_score,0.032007076896915045,0.052199696492653484
-text-embedding-3-small (Original),density,0.06485223687262005,8.252735584424713e-05
-text-embedding-3-small (Original),centrality,-0.13431413201416198,2.7863865947593877e-16
-text-embedding-3-large,curvature_score,0.12848968303771532,3.0333787503241108e-21
-text-embedding-3-large,density,0.001180932599198085,0.930989849298593
-text-embedding-3-large,centrality,-0.07568957797149158,2.7225875651301072e-08
-all-mpnet-base-v2 (Open Source),curvature_score,0.008415586297608748,0.5371437160970481
-all-mpnet-base-v2 (Open Source),density,0.015521141143986433,0.2550135250166139
-all-mpnet-base-v2 (Open Source),centrality,-0.16198654797572457,5.9136561353894364e-33
+text-embedding-3-small (Original),curvature_score,0.04522677438823988,0.00606837072334615
+text-embedding-3-small (Original),density,0.04521627676993511,0.006080167401223744
+text-embedding-3-small (Original),centrality,-0.10173785963674097,6.183424763474341e-10
+text-embedding-3-large,curvature_score,0.09032568795532693,3.1951731645936695e-11
+text-embedding-3-large,density,0.020355694122541707,0.13547200021329242
+text-embedding-3-large,centrality,-0.0480423547463381,0.0004234021501443947
+all-mpnet-base-v2 (Open Source),curvature_score,0.005455305427885103,0.6891208858396147
+all-mpnet-base-v2 (Open Source),density,0.05742243328347958,2.5050176089230615e-05
+all-mpnet-base-v2 (Open Source),centrality,-0.1649304630895055,4.06776705649842e-34

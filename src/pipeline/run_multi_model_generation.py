@@ -85,7 +85,7 @@ def run_generation(model_key, n_prompts, output_dir):
             try:
                 response = client.generate(
                     prompt=prompt_data['question'],
-                    max_tokens=300,
+                    max_tokens=4000,
                     temperature=0.7
                 )
                 
