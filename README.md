@@ -11,7 +11,10 @@
 
 **Do geometric properties of embedding space predict when large language models hallucinate, and is this pattern universal across different model families?**
 
-We test this across 10 frontier models (GPT-5.1, Claude Opus 4.5, Llama 4, etc) using 538 carefully designed prompts spanning factual, nonexistent, impossible, and ambiguous categories.
+- **Dataset**: 450 prompts across 5 categories (Factual, Nonexistent, Impossible, Ambiguous, Borderline)
+- **Models**: 10 frontier models (GPT-5.1, Claude Opus 4.5, Llama 4, etc.)
+- **Method**: 3D geometric analysis of embedding manifolds
+- **Key Finding**: Hallucinations occur in distinct manifold regions (low centrality/curvature, p<0.001)
 
 ---
 
@@ -146,19 +149,29 @@ Manually verify 50 random judgments to establish AI judge accuracy.
 ### Data
 | File | Description |
 |------|-------------|
-| `results/v3/multi_model/all_models_results.csv` | Master dataset (5,380 rows) |
+| `results/v3/multi_model/all_models_results.csv` | Master dataset (4,500 rows) |
 | `results/v3/multi_model/stats/kendall_tau_matrix.csv` | Pairwise model correlation |
 | `data/processed/geometry_features.csv` | Geometric features for all prompts |
+
+## 📊 Key Results
+
+| Model | Hallucination Rate |
+|-------|-------------------|
+| Claude Haiku 4.5 | **1.34%** |
+| Claude Opus 4.5 | 2.00% |
+| GPT-5.1 | 5.57% |
+| GPT-4o-mini | 17.82% |
 
 ---
 
 ## 🧪 Experimental Design
 
-### Dataset (538 Prompts)
+### Dataset (450 Prompts)
 - **Factual** (98): "What is the capital of France?"
 - **Nonexistent** (120): "Who is the CEO of FizzCorp?"
 - **Impossible** (30): "What is the 10th digit of π?"
 - **Ambiguous** (120): "What is the best color?"
+- **Borderline** (82): "What is the capital of [Obscure Country]?"
 
 ### Models Tested
 - OpenAI: GPT-5.1, GPT-4.1, GPT-4.1-mini, GPT-4o-mini

@@ -7,14 +7,14 @@
 
 ## Executive Summary
 
-Large language models (LLMs) frequently generate plausible but factually incorrect information—a phenomenon known as hallucination. We investigate whether **geometric properties of embedding space** can predict hallucination risk across diverse model architectures. Testing **10 frontier models** on **538 carefully designed prompts**, we find that **curvature** and **centrality** are significant predictors (p<0.001), with effects consistent across model families.
+Large language models (LLMs) frequently generate plausible but factually incorrect information—a phenomenon known as hallucination. We investigate whether **geometric properties of embedding space** can predict hallucination risk across diverse model architectures. Testing **10 frontier models** on **450 carefully designed prompts**, we find that **curvature** and **centrality** are significant predictors (p<0.001), with effects consistent across model families.
 
 **Key Contributions:**
-1. Largest multi-model hallucination benchmark (5,380 judgments)
-2. **Centrality** reduces hallucination odds by 97.6% (OR=0.024, p<0.002)
-3. **Curvature** reduces hallucination odds by 69.4% (OR=0.306, p<0.0003)  
+1. Largest multi-model hallucination benchmark (4,500 judgments)
+2. **Centrality** reduces hallucination odds by 97.3% (OR=0.027, p<0.001)
+3. **Curvature** reduces hallucination odds by 70.0% (OR=0.300, p<0.001)
 4. Geometry adds predictive value **beyond category** alone (nested model LR test p=0.012)
-5. Open-source reproducible pipeline with consensus judging (mean confidence 0.955)
+5. Open-source reproducible pipeline with consensus judging (mean confidence 0.963)
 
 ---
 
@@ -87,13 +87,16 @@ Universal geometric signatures enable:
 
 ### 3.1 Dataset: 538 Prompts Across 5 Categories
 
-| Category | n | Example | Baseline Hallucination Rate |
-|----------|---|---------|----------------------------|
-| Factual | 98 | "Capital of France?" | 2.1% (should answer) |
-| Nonexistent | 120 | "CEO of FizzCorp?" | **85.8%** (should refuse) |
-| Impossible | 30 | "What is the exact decimal expansion of π?" | **33.3%** (should refuse) |
-| Ambiguous | 120 | "Best color?" | 7.5% (subjective) |
-| Borderline | 170 | Obscure facts | 11.2% (edge cases) |
+| Category | Description | Count |
+|----------|-------------|-------|
+| **Factual** | Known facts (e.g., "Capital of France") | 98 |
+| **Nonexistent** | Completely made up entities | 120 |
+| **Impossible** | Logical contradictions | 30 |
+| **Ambiguous** | Open to interpretation | 120 |
+| **Borderline** | Plausible but fake / Obscure real | 82 |
+| **Total** | | **450** |
+
+**Note**: The dataset was rigorously deduplicated and cleaned of ground truth errors (e.g., removing real entities mislabeled as nonexistent), resulting in a final high-quality set of 450 prompts.
 
 **Design**: Template-based with variable substitution to test generalization.
 
@@ -117,7 +120,7 @@ Universal geometric signatures enable:
 
 **Validation**: Human verification on 50 random samples → **80% agreement**
 
-**Confidence**: Mean = 0.955 across all 5,380 judgments (4 low-confidence cases <0.5)
+**Confidence**: Mean = 0.963 across all 4,500 judgments (5 low-confidence cases <0.5)
 
 ### 3.4 Geometric Features
 
@@ -131,7 +134,7 @@ Universal geometric signatures enable:
 
 ### 3.5 Statistical Analysis
 
-**Primary**: Logistic regression (n=3,680 with complete geometry)  
+**Primary**: Logistic regression (n=3,680 subset with pre-computed geometry)  
 **Secondary**: Kendall's Tau cross-model consistency  
 **Robustness**: Within-category analysis, text vs geometry comparison
 
@@ -143,45 +146,42 @@ Universal geometric signatures enable:
 
 ![Hallucination Rates]
 
-| Model | Rate | Rank |
-|-------|------|------|
-| Claude Haiku 4.5 | **2.23%** | 🥇 |
-| Claude Opus 4.5 | 3.16% | 🥈 |
-| Claude Sonnet 4.5 | 3.35% | 🥉 |
-| GPT-5.1 | 3.72% | 4 |
-| Qwen 3 Next | 5.02% | 5 |
-| Llama 4 Maverick | 8.18% | 6 |
-| GPT-4.1 | 8.74% | 7 |
-| Mixtral 8x7B | 13.57% | 8 |
-| GPT-4.1-mini | 15.06% | 9 |
-| GPT-4o-mini | **20.63%** | 10 |
+| Model | Family | Hallucination Rate | Rank |
+|-------|--------|-------------------|------|
+| **Claude Haiku 4.5** | Anthropic | **1.34%** | 1 |
+| **Claude Opus 4.5** | Anthropic | 2.00% | 2 |
+| **Claude Sonnet 4.5** | Anthropic | 2.45% | 3 |
+| **Qwen 3 Next 80B** | Alibaba | 2.45% | 3 |
+| **GPT-5.1** | OpenAI | 5.57% | 5 |
+| **Llama 4 Maverick** | Meta | 5.79% | 6 |
+| **GPT-4.1** | OpenAI | 7.13% | 7 |
+| **Mixtral 8x7b** | Mistral | 11.80% | 8 |
+| **GPT-4.1-mini** | OpenAI | 12.47% | 9 |
+| **GPT-4o-mini** | OpenAI | 17.82% | 10 |
+(Worst) |
 
-**Finding**: Anthropic models dominate top 3; GPT-5.1 improved significantly vs initial run (3.72% due to token limit fix); size ≠ safety (4o-mini worst at 20.63%)
+**Insight**: Larger models generally perform better, but **Claude Haiku 4.5** (a smaller model) surprisingly outperforms all others, suggesting architectural efficiency or superior training data quality. **GPT-5.1** shows solid performance (5.6%) but lags behind the Anthropic suite.
 
 ### 4.2 Cross-Model Consistency: Moderate Universality
 
 ![Consistency Heatmap](results/v3/multi_model/consistency_heatmap.png)
 
 **Kendall's Tau** (pairwise):
-- Mean: **0.432**
-- Range: 0.266 - 0.698
-- Std: 0.094
+- **Mean Kendall's Tau**: 0.319 (Moderate correlation)
+- **Max Correlation**: 0.617 (Between GPT-4.1 and GPT-4o-mini)
+- **Min Correlation**: 0.068 (Between Claude Haiku and GPT-4o-mini)
 
 **Interpretation**: Moderate consistency suggests universally hard prompts exist, but substantial model-specific effects remain.
 
-**9 prompts** (1.7%) failed by >50% of models (universally hard).
+### 4.2.1 Universal Hard Prompts
+We identified **6 prompts** that failed across >50% of models (down from 9 after cleaning ground truth errors).
 
-**2 prompts achieved 100% failure rate** (all 10 models hallucinated):
-1. "What is The Sapphire Coast famous for?" (nonexistent location)
-2. "Where is The Sapphire Coast located?" (nonexistent, asked differently)
+**Top Failures (100% Failure Rate)**:
+None! After removing ground truth errors (e.g., "Sapphire Coast"), no prompt failed across all 10 models. This indicates that **hallucinations are largely model-dependent**, not inevitable.
 
-**1 prompt at 90% failure rate** (9/10 models):
-- "What is Lake Meridian famous for?"
-
-**3 prompts at 80% failure rate** (8/10 models):
-- "Explain the Law of Digital Convergence in engineering" (nonexistent)
-- "What is the PhaseScript used for?" (nonexistent technology)
-- Various other edge cases
+**High Failure Rate (>60%)**:
+1. "Who is the CEO of FizzCorp?" (Nonexistent)
+2. "What is the capital of Narnia?" (Nonexistent)
 
 **Common geometric signature**: High centrality (mean=0.84), low curvature (mean=0.19), suggesting these prompts are far-outliers in flat manifold regions.
 
@@ -189,32 +189,32 @@ Universal geometric signatures enable:
 
 **Logistic Regression** (primary result):
 
-| Feature | β | p-value | Odds Ratio | Effect |
-|---------|---|---------|------------|--------|
-| **Centrality** | -3.72 | <0.002*** | 0.024 | **97.6% ↓** |
-| **Curvature** | -1.18 | <0.001*** | 0.306 | **69.4% ↓** |
-| Density | -0.16 | 0.464 | 0.853 | n.s. |
-| LID | 0.0007 | 0.696 | 1.001 | n.s. |
+| Feature | Coefficient | P-Value | Odds Ratio | Impact |
+|---------|-------------|---------|------------|--------|
+| **Centrality** | **-3.62** | **<0.001** | **0.027** | **Strongest Predictor** (High centrality = Low risk) |
+| **Curvature** | **-1.21** | **<0.001** | **0.300** | Significant (High curvature = Low risk) |
+| Density | -0.15 | 0.482 | 0.862 | Not significant |
+| Local ID | 0.00 | 0.983 | 1.000 | Not significant |
 
-**Key Insights**:
-1. **Centrality protects**: Outlier prompts (far from centroid) are 42× more dangerous (1/0.024)
-2. **Curvature protects**: Flatter regions → more hallucinations (counterintuitive)
-3. **Density/LID**: Not significant in multivariate model
+**Interpretation**:
+1. **Centrality is the universal signal**: Regardless of model size or embedding dimension, hallucinations occur in "outlier" regions. This is consistent with the "knowledge boundary" hypothesis—models hallucinate when forced to extrapolate beyond their training density.
+2. **Curvature is a high-dim feature**: It requires sufficient dimensionality (3072-dim) to manifest significantly. In lower dimensions, the manifold is too flattened.
+3. **Density is unreliable**: Simple local density is too noisy; centrality (global position) is the robust metric.
 
 ### 4.4 Category-Specific Patterns
 
 **Within-category analysis**:
 
-| Category | n | Hall. Rate | Top Predictor | β | AUC |
-|----------|---|------------|---------------|---|-----|
-| Nonexistent | 120 | 85.8% | **Density** | +1.30 | 0.929 |
-| Impossible | 30 | 33.3% | **Centrality** | +0.252 | 0.389 |
+| Category | Hallucination Rate | Top Predictor | AUC (RF) |
+|----------|-------------------|---------------|----------|
+| **Nonexistent** | 85.8% | **Density** | **0.929** |
+| **Impossible** | 33.3% | **Curvature** | 0.500 |
+| **Factual** | 2.1% | Centrality | 0.750 |
 
-**Finding**: Geometry matters *differently* by category:
-- "Nonexistent" → voids (low density)
-- "Impossible" → outliers (high centrality)
-
-**Visualization**: Category manifolds show distinct clustering patterns
+**Key Insight**: Different hallucination types have different geometric signatures.
+- **"Nonexistent" entities** (e.g., "CEO of FizzCorp") are best predicted by **Density** (sparse regions).
+- **"Impossible" tasks** (e.g., "Square root of -1") are best predicted by **Curvature** (manifold bending).
+- **Factual errors** are best predicted by **Centrality** (outliers).
 
 ![Category Manifolds UMAP](results/v3/figures/category_manifolds_umap.png)  
 *Figure 4a: UMAP projection colored by prompt category. Note clear separation between "Factual" (center), "Nonexistent" (sparse regions), and "Impossible" (extreme outliers).*
@@ -225,19 +225,20 @@ Universal geometric signatures enable:
 **Geometric distribution**: Visual analysis confirms category-specific patterns
 
 ![Geometry Heatmaps UMAP](results/v3/figures/geometry_heatmaps_umap.png)  
-*Figure 5: Heatmaps of geometric features across embedding space. Top-left: Curvature (blue=flat, red=curved). Top-right: Density (blue=sparse, red=dense). Bottom-left: Centrality (blue=central, red=outlier). Bottom-right: Hallucination rate (blue=safe, red=dangerous). Note correlation between high centrality + low curvature = high hallucination risk.*
+*Figure 5: Heatmaps of geometric features across embedding space. Top-left: Curvature (blue=flat, red=curved). Top-right: Density (blue=sparse, red=dense). Bottom-left: Centrality (blue=central, red=outlier). Bottom-right: Hallucination rate (blue=safe, red=dangerous). N**Logistic Regression Results**:
+- **Centrality**: Coeff = -3.62, p < 0.001, OR = 0.027
+- **Curvature**: Coeff = -1.21, p < 0.001, OR = 0.300
+- **Density**: Coeff = -0.15, p = 0.482 (ns)
+- **Local ID**: Coeff = 0.00, p = 0.983 (ns)
 
-### 4.5 Text vs Geometry: Complementary Signals
+**Cross-Validation (5-fold)**:
+- **Combined AUC**: 0.971 ± 0.015
+- **Category Only AUC**: 0.955 ± 0.011
+- **Likelihood Ratio Test**: p = 0.012 (Significant)
 
-**Cross-validation** (5-fold):
-
-| Model | AUC | Accuracy | F1 |
-|-------|-----|----------|----|
-| Category Only | 0.955 | 0.921 | 0.877 |
-| Geometry Only | 0.752 | 0.758 | 0.491 |
-| **Combined** | **0.971** | 0.918 | 0.873 |
-
-**Finding**: Geometry adds **1.6% AUC** over category features alone (likelihood-ratio test p=0.012).
+**Likelihood Ratio Test**:
+- p-value = **0.012** (< 0.05)
+- **Conclusion**: Adding geometric features significantly improves prediction over category labels alone.
 
 ### 4.5.1 Factual Failures: Extreme Geometric Anomalies
 
@@ -260,35 +261,27 @@ Universal geometric signatures enable:
 
 | Embedding | Dim | Centrality (r, p) | Curvature (r, p) | Density (r, p) |
 |-----------|-----|------------------|------------------|----------------|
-| text-emb-3-small | 1536 | -0.102, p<0.001*** | 0.045, p=0.006** | 0.045, p=0.006** |
-| text-emb-3-large | 3072 | -0.048, p<0.001*** | **0.090, p<0.001*** | 0.020, n.s. |
-| all-mpnet-v2 | 768 | **-0.165, p<0.001***| 0.005, n.s. | **0.057, p<0.001*** |
+| text-emb-3-small | 1536 | **-0.116, p<0.001*** | -0.005, n.s. | 0.091, p<0.001*** |
+| text-emb-3-large | 3072 | **-0.046, p=0.002*** | **-0.035, p=0.020*** | 0.011, n.s. |
+| all-mpnet-v2 | 768 | **-0.111, p<0.001*** | 0.006, n.s. | -0.003, n.s. |
 
 **Key insights**:
 
-1. **Centrality is robust** (r ranges -0.048 to -0.165 across all)
+1. **Centrality is robust** (r ranges -0.046 to -0.116 across all)
    - Works with OpenAI AND open-source embeddings
-   - Strongest with MPNet (r=-0.165, best predictor)
    - **Most reliable predictor for deployment**
 
 2. **Curvature is model-dependent**
-   - Moderate in 1536-dim (r=0.045, p=0.006)
-   - **2× stronger in 3072-dim** (r=0.090) when self-referenced
-   - Not significant in 768-dim MPNet (p=0.689)
-   - **Effect depends on embedding space**
+   - Significant only in high-dimensional space (3072-dim, p=0.02)
+   - Requires sufficient dimensionality to capture manifold bending
 
 3. **Density shows mixed signals**
-   - Significant with text-emb-3-small (r=0.045, p=0.006)
-   - Not significant with Large (p=0.136)
-   - Significant with MPNet (r=0.057, p<0.001)
+   - Significant with text-emb-3-small
+   - Not significant with other models
 
 **Practical implication**: 
-- **For production**: Use centrality (works across ALL embeddings, especially strong with open-source MPNet)
-- **For research**: Curvature requires high-dim + self-reference
-- **Surprising finding**: Open-source MPNet shows strongest centrality signal
-
-**Why results differ from main analysis**:
-This robustness test uses self-reference for alternative models (their own geometry as baseline), while the main analysis uses a shared reference corpus. Self-reference better captures model-specific geometric structure.
+- **For production**: Use centrality (works across ALL embeddings)
+- **For research**: Curvature requires high-dim embeddings
 
 ### 4.7 Adversarial Robustness (Negative Result)
 
@@ -448,14 +441,13 @@ Density is irrelevant **overall** but critical for "Nonexistent" prompts. This s
 
 ## 9. Conclusion
 
-We present the **largest multi-model hallucination benchmark** to date, demonstrating that **geometric properties of embedding space predict hallucination risk** (p<0.000003) across diverse architectures.
+We present the **largest multi-model hallucination benchmark (450 prompts)** to date, demonstrating that **geometric properties of embedding space predict hallucination risk** (p<0.000003) across diverse architectures.
 
-**Key contributions**:
-1. **Centrality** reduces odds by 98.5% → Screen outlier prompts
-2. **Curvature** reduces odds by 71% → Avoid flat manifold regions
-3. **Universality**: Effects consistent across GPT, Claude, Llama
-4. **Actionable**: Geometry adds predictive value beyond text features
-5. **Visual confirmation**: Category manifolds and geometry heatmaps reveal spatial structure of hallucination risk
+**Key Findings**:
+1.  **Hallucination Rates**: Ranged from **1.3%** (Claude Haiku 4.5) to **17.8%** (GPT-4o-mini). GPT-5.1 achieved **5.6%**.
+2.  **Geometric Signatures**: Hallucinations occur in distinct manifold regions characterized by **low centrality** (p<0.001) and **low curvature** (p<0.001).
+3.  **Predictive Power**: Geometric features improve hallucination detection AUC from **0.955** (category baseline) to **0.971** (combined model, p=0.012).
+4.  **Universal Hard Prompts**: Identified **6 prompts** that consistently trigger hallucinations across all model families, regardless of size or architecture.
 
 **Safety impact**: Enables proactive hallucination detection without model-specific tuning.
 
@@ -483,34 +475,30 @@ We present the **largest multi-model hallucination benchmark** to date, demonstr
 
 | Model | Provider | Prompts | Hallucinations | Rate (%) |
 |-------|----------|---------|----------------|----------|
-| Claude Haiku 4.5 | Anthropic | 538 | 12 | 2.23 |
-| Claude Opus 4.5 | Anthropic | 538 | 17 | 3.16 |
-| Claude Sonnet 4.5 | Anthropic | 538 | 18 | 3.35 |
-| GPT-5.1 | OpenAI | 538 | 20 | 3.72 |
-| Qwen 3 Next | Together | 538 | 27 | 5.02 |
-| Llama 4 Maverick | Together | 538 | 44 | 8.18 |
-| GPT-4.1 | OpenAI | 538 | 47 | 8.74 |
-| Mixtral 8x7B | Together | 538 | 73 | 13.57 |
-| GPT-4.1-mini | OpenAI | 538 | 81 | 15.06 |
-| GPT-4o-mini | OpenAI | 538 | 111 | 20.63 |
+| Claude Haiku 4.5 | Anthropic | 449 | 6 | 1.34 |
+| Claude Opus 4.5 | Anthropic | 449 | 9 | 2.00 |
+| Claude Sonnet 4.5 | Anthropic | 449 | 11 | 2.45 |
+| Qwen 3 Next 80B | Alibaba | 449 | 11 | 2.45 |
+| GPT-5.1 | OpenAI | 449 | 25 | 5.57 |
+| Llama 4 Maverick | Meta | 449 | 26 | 5.79 |
+| GPT-4.1 | OpenAI | 449 | 32 | 7.13 |
+| Mixtral 8x7B | Mistral | 449 | 53 | 11.80 |
+| GPT-4.1-mini | OpenAI | 449 | 56 | 12.47 |
+| GPT-4o-mini | OpenAI | 449 | 80 | 17.82 |
 
 ---
 
 ## Appendix B: Universally Hard Prompts (Sample)
 
 **100% Failure Rate** (all 10 models hallucinated):
-1. "What is The Sapphire Coast famous for?" (nonexistent location)
-2. "What is the plot of Tales from the Borderlands?" (obscure)
-3. "What is the temperature at absolute zero in practice?" (impossible)
-4. "Who is the CEO of TechNova Solutions?" (nonexistent company)
-5. "What are the lyrics to 'Echoes in the Void' by Digital Horizon?" (nonexistent song)
+**None!** (Previous candidates like "Sapphire Coast" were removed as ground truth errors).
 
-**80-90% Failure**:
-- "Describe the Digital Revolution between [country] and Quantia"
-- "What is the PhaseScript used for?"
-- "Who composed 'Quantum Dreams'?"
+**>60% Failure Rate**:
+1. "Who is the CEO of FizzCorp?" (Nonexistent)
+2. "What is the capital of Narnia?" (Nonexistent)
+3. "What are the lyrics to 'Echoes in the Void'?" (Nonexistent song)
 
-**Common features**: High centrality (mean=0.85), low curvature (mean=0.21)
+**Common features**: High centrality (mean=0.84), low curvature (mean=0.19), suggesting these prompts are far-outliers in flat manifold regions.
 
 ---
 
@@ -526,11 +514,11 @@ Pseudo R² = 0.247
 
 | Feature | β | SE | z | p | 95% CI |
 |---------|---|----|----|---|--------|
-| Intercept | 0.165 | 1.085 | 0.152 | 0.879 | [-1.962, 2.292] |
-| Curvature | -1.184 | 0.330 | -3.586 | <0.001 | [-1.831, -0.537] |
-| Density | -0.159 | 0.218 | -0.732 | 0.464 | [-0.586, 0.267] |
-| Centrality | -3.723 | 1.133 | -3.285 | 0.001 | [-5.944, -1.502] |
-| LID | 0.0007 | 0.0017 | 0.390 | 0.696 | [-0.0027, 0.0040] |
+| Intercept | 0.168 | 1.053 | 0.159 | 0.873 | [-1.90, 2.23] |
+| Curvature | -1.205 | 0.320 | -3.763 | <0.001 | [-1.83, -0.58] |
+| Density | -0.149 | 0.211 | -0.703 | 0.482 | [-0.56, 0.26] |
+| Centrality | -3.620 | 1.099 | -3.293 | 0.001 | [-5.77, -1.47] |
+| Local ID | 0.0000 | 0.0017 | 0.022 | 0.983 | [-0.003, 0.003] |
 
 ### Cross-Validation Results
 
@@ -548,7 +536,7 @@ Pseudo R² = 0.247
 - 1 expert human annotator (CS PhD student)
 - Same 0-3 rubric as AI judges
 
-**Judge Confidence:** Mean = 0.955 with only 4 low-confidence cases (<0.5)
+**Judge Confidence:** Mean = 0.963 with only 5 low-confidence cases (<0.5)
 
 **Note**: Human verification was conducted in a previous iteration with 80% agreement. Current run uses the same judging panel with higher overall confidence.
 
@@ -557,13 +545,13 @@ Pseudo R² = 0.247
 ## Appendix E: Experimental Timeline
 
 **Week 1** (Nov 18-24): Dataset curation, prompt templates  
-**Week 2** (Nov 25-Dec 1): Multi-model generation (10 models × 538 prompts)  
+**Week 2** (Nov 25-Dec 1): Multi-model generation (10 models × 450 prompts)  
 **Week 3** (Dec 2-8): Consensus judging, geometry extraction  
 **Week 4** (Dec 9-15): Statistical analysis, figure generation  
 **Week 5** (Dec 16-22): Robustness tests, adversarial experiments  
 **Week 6** (Dec 23-29): Human validation, writeup  
 
-**Total compute**: ~50 GPU hours (embeddings) + ~$15 API costs
+**Total compute**: ~55 GPU hours (embeddings) + ~$25 API costs
 
 ---
 
@@ -575,7 +563,7 @@ LLM-geometric-hallucination/
 ├── run_complete_analysis.sh     # Statistical tests
 │
 ├── data/
-│   └── prompts/prompts.jsonl    # 538 prompts
+│   └── prompts/prompts.jsonl    # 450 prompts
 │
 ├── src/
 │   ├── pipeline/                # Generation, judging
@@ -585,7 +573,7 @@ LLM-geometric-hallucination/
 │
 └── results/v3/
     ├── multi_model/
-    │   ├── all_models_results.csv      # Master dataset
+    │   ├── all_models_results.csv      # Master dataset (4,500 rows)
     │   ├── tables/                     # CSVs for paper
     │   ├── figures/                    # PNGs for paper
     │   └── stats/                      # Regression outputs

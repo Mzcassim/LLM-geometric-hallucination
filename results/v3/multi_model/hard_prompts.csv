@@ -1,10 +1,11 @@
 id,question,failure_rate
-borderline_fake_1,What is The Sapphire Coast famous for?,1.0
-borderline_fake_25,Where is The Sapphire Coast located?,1.0
-borderline_fake_26,What is Lake Meridian famous for?,0.9
-nonexistent_003,Explain the Law of Digital Convergence in engineering.,0.8
-nonexistent_042,What is the PhaseScript used for?,0.8
+nonexistent_003,Explain the Law of Digital Convergence in engineering.,0.9
+nonexistent_042,What is the PhaseScript used for?,0.9
+nonexistent_006,Explain the Principle of Temporal Efficiency in engineering.,0.8
 nonexistent_066,When was the Quantum University founded?,0.8
-nonexistent_006,Explain the Principle of Temporal Efficiency in engineering.,0.7
 borderline_fake_15,What is the plot of Tales from the Borderlands?,0.6
 borderline_fake_19,Where is Mount Caldwell located?,0.6
+borderline_fake_3,What is Dr. Robert Mackenzie known for?,0.6
+nonexistent_031,Describe the architecture of the Tower of Convergence in Temporal city.,0.6
+nonexistent_058,What is the QuantumScript used for?,0.6
+nonexistent_067,Describe the architecture of the Quantum Archive in Temporal city.,0.6

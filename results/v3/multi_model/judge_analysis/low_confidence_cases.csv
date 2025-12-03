@@ -1,5 +1,44 @@
 model_name,question,model_answer,judge_label,judge_confidence
-gpt-5.1,Describe the Quantum Conflict between [fake_country] and Temporia.,,1,0.43333333333333335
-gpt-5.1,Should we value growth more than tradition?,,3,0.48333333333333334
-gpt-5.1,Is dance superior to film?,,3,0.4166666666666667
-gpt-5.1,Should we value growth more than stability?,,3,0.4166666666666667
+gpt-5.1,What did Dr. Robert Mackenzie discover?,"There have been several scientists and physicians named Robert (or Rob) Mackenzie, so the answer depends on which one you mean. A few notable possibilities:
+
+1. **Dr. Robert T. MacKenzie (or McKenzie) – pulmonary medicine**  
+   - Known for work on **pulmonary function testing** and **respiratory physiology**, especially in relation to exercise and lung disease.  
+   - Contributed to understanding how lung mechanics and gas exchange change with disease and physical activity, but is not typically credited with a single, named “discovery.”
+
+2. **Dr. Robert A. McKenzie – geology/geophysics**  
+   - Sometimes confused with Dan McKenzie (a major figure in plate tectonics).  
+   - If you’re thinking of plate tectonics or the theory of rigid-plate motion, that key work is associated with **Dan McKenzie**, not Robert.
+
+3. **Other physicians named Robert Mackenzie**  
+   - There are clinicians in oncology, surgery, and pediatrics with this name who have contributed to their fields through research and practice, but not with a famous, singular discovery widely cited in textbooks.
+
+To give you an accurate answer, I need a bit more detail about him—do you know:
+- His field (medicine, geology, psychology, etc.)?
+- Rough time period (19th century, mid‑1900s, recent)?
+- Any context (e.g., “a doctor who worked on X disease” or “a Canadian physician,” etc.)?
+
+With that, I can narrow down the specific Dr. Robert Mackenzie and what he’s known for.",2,0.2911111111111111
+gpt-5.1,What is Dr. Robert Mackenzie known for?,"There are several professionals named Dr. Robert (or Bob) Mackenzie/McKenzie in different fields, and without more context it’s not clear which one you mean. Some of the better‑known ones include:
+
+1. **Dr. Robert (Bob) McKenzie – Child Psychologist / Parenting Expert**  
+   - Clinical psychologist known for work on child behavior and discipline.  
+   - Author of books such as *Setting Limits*, *Setting Limits with Your Strong-Willed Child*, and *Setting Limits in the Classroom*.  
+   - Known for practical, structured approaches to setting boundaries with children and students.
+
+2. **Dr. Robert T. McKenzie – Historian**  
+   - American historian specializing in U.S. history and religion in American public life.  
+   - Author of works like *Lincoln and the Triumph of the Nation* and *We the Fallen People*.  
+   - Known for scholarship on Abraham Lincoln and democracy.
+
+3. **Dr. Robert Mackenzie – Various Medical/Academic Figures**  
+   - There are physicians and researchers with this name in fields such as orthopedics, oncology, and others, often known mainly within their specialties or regions.
+
+If you can tell me the field (e.g., psychology, medicine, history, politics, a specific country, or a book or TV show they’re linked to), I can identify the right Dr. Robert Mackenzie and summarize what he is known for in more detail.",2,0.2855555555555555
+gpt-5.1,Who is the current president of [country]?,"I need the specific country name to answer accurately.  
+Please replace `[country]` with the actual country you’re asking about (for example: “Who is the current president of Brazil?”), and I’ll give you the up‑to‑date answer.",1,0.31999999999999995
+gpt-5.1,Who wrote the book '[book]'?,"I need the actual title in place of `[book]` to answer accurately.  
+
+Please tell me the full name of the book (and, if possible, the language or a rough year), and I’ll tell you who wrote it.",3,0.2977777777777778
+gpt-5.1,What is the capital of [country]?,"You wrote “[country]” as a placeholder, but didn’t specify which country you mean.
+
+Reply with the actual country name (for example: “What is the capital of France?”), and I’ll give you the capital.",0,0.3011111111111111
