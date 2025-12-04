@@ -57,21 +57,26 @@ class ConsensusJudge:
         
         # Majority vote
         counts = Counter(labels)
-        majority_label, count = counts.most_common(1)[0]
+        majority_label, majority_count = counts.most_common(1)[0]
         
-        # If tie or no majority, default to most severe (hallucination > partial > correct)
-        # Or conservative: if any judge says hallucinated (2), flag it?
-        # Let's stick to strict majority for now.
+        # Calculate confidence based on agreement rate
+        # e.g., if 3/3 agree → 1.0, if 2/3 agree → 0.67
+        total_judges = len(labels)
+        agreement_rate = majority_count / total_judges
         
-        # Average confidence
-        avg_confidence = sum(r['confidence'] for r in results) / len(results)
+        # Weight by average individual confidence for nuance
+        # Final confidence = agreement_rate * avg_individual_confidence
+        avg_individual_confidence = sum(r['confidence'] for r in results) / len(results)
+        consensus_confidence = agreement_rate * avg_individual_confidence
         
         # Combine justifications
         combined_justification = " | ".join([f"{j.model_name}: {r['justification']}" for j, r in zip(self.judges, results)])
         
         return {
             "label": majority_label,
-            "confidence": avg_confidence,
+            "confidence": consensus_confidence,
             "justification": combined_justification,
-            "individual_judgments": results
+            "individual_judgments": results,
+            "agreement_rate": agreement_rate,
+            "individual_confidence_avg": avg_individual_confidence
         }
