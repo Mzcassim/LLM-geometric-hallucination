@@ -283,7 +283,17 @@ None! After removing ground truth errors (e.g., "Sapphire Coast"), no prompt fai
 - **For production**: Use centrality (works across ALL embeddings)
 - **For research**: Curvature requires high-dim embeddings
 
-### 4.7 Early-Warning System: Proactive Detection
+### 4.7 Adversarial Robustness (Negative Result)
+
+**Experiment**: Perturb 10 factual prompts with 5 methods × 5 variations = 50 samples
+
+**Methods**: Confusing context, synonyms, noise, nonsense, false premises
+
+**Result**: 0% hallucination rate (0/50)
+
+**Interpretation**: Modern models are **highly robust** to surface-level adversarial text. Geometry shifted (Δdensity=-0.15) but not enough to cross decision boundary.
+
+### 4.8 Early-Warning System: Proactive Detection
 
 **Goal**: Develop a production-ready system to **flag high-risk prompts before generation** based on geometric features.
 
@@ -291,26 +301,26 @@ None! After removing ground truth errors (e.g., "Sapphire Coast"), no prompt fai
 
 **ROC Analysis**:
 
-![ROC Curve](results/early_warning/roc_curve.png)  
+![ROC Curve](results/v3/prediction/early_warning/roc_curve.png)  
 *Figure 7: ROC curve showing hallucination detection performance. AUC indicates strong discriminative ability between safe and risky prompts.*
 
 **Precision-Recall Trade-off**:
 
-![Precision-Recall Curve](results/early_warning/precision_recall_curve.png)  
+![Precision-Recall Curve](results/v3/prediction/early_warning/precision_recall_curve.png)  
 *Figure 8: Precision-Recall curve for threshold selection. Shows trade-off between catching hallucinations (recall) vs false alarm rate (precision).*
 
 **Operational Thresholds**:
 
 | Flag Top % | Hallucinations Caught | Precision | Recall | False Positive Rate |
 |------------|----------------------|-----------|--------|---------------------|
-| **30%** | 80.0% | 84.8% | 80.0% | 6.6% |
-| **40%** | 91.4% | 72.7% | 91.4% | 15.8% |
-| **50%** | 97.1% | 61.8% | 97.1% | 27.6% |
+| **30%** | 88.7% | 16.6% | 88.7% | 26.5% |
+| **40%** | 93.5% | 13.2% | 93.5% | 36.8% |
+| **50%** | 93.5% | 10.5% | 93.5% | 47.4% |
 
 **Key findings**:
-1. **Conservative (30%)**: Flag top 30% riskiest prompts → catch 80% of hallucinations with 85% precision
-2. **Balanced (40%)**: Flag 40% → catch 91% of hallucinations (recommended operating point)
-3. **Aggressive (50%)**: Flag 50% → catch 97% of hallucinations, higher false positive rate
+1. **Conservative (30%)**: Flag top 30% riskiest prompts → catch **89%** of hallucinations (Precision is low due to base rate imbalance, but recall is excellent).
+2. **Balanced (40%)**: Flag 40% → catch **94%** of hallucinations.
+3. **Aggressive (50%)**: Diminishing returns (same recall as 40%).
 
 **Deployment strategy**:
 - **Real-time flagging**: Compute geometric features for incoming prompts (milliseconds)
@@ -320,17 +330,21 @@ None! After removing ground truth errors (e.g., "Sapphire Coast"), no prompt fai
   - Human-in-the-loop review
   - Refusal with explanation
 
-**Safety impact**: At 40% threshold, the system **prevents 91% of hallucinations** while only adding overhead to 40% of prompts—a practical operating point for production deployment.
+**Safety impact**: At 30% threshold, the system **prevents ~89% of hallucinations** while only flagging 30% of traffic.
 
-### 4.8 Adversarial Robustness (Negative Result)
+**Feature Importance (Random Forest)**:
+1. **Category: Nonexistent** (29.5%): Being in the "Nonexistent" category is the single biggest risk factor.
+2. **Density** (17.7%): Local manifold density is the strongest *geometric* predictor in the non-linear model.
+3. **Category: Ambiguous** (14.0%): Second most risky category.
+4. **Oppositeness** (12.4%): Geometric measure of concept conflict.
+5. **Centrality** (8.3%): Still relevant, but less dominant than in linear analysis.
 
-**Experiment**: Perturb 10 factual prompts with 5 methods × 5 variations = 50 samples
+**Reconciliation**: Why does Density matter here but not in Logistic Regression?
+- **Linear vs. Non-linear**: Logistic regression looks for a simple global boundary (Centrality). Random Forest finds complex, non-linear pockets of risk.
+- **Interaction Effects**: Density is highly predictive *within specific categories* (e.g., sparse regions for "Nonexistent" entities), which the Random Forest captures but a simple linear model misses.
+- **Conclusion**: **Centrality** is the robust *general* signal, while **Density** provides the *precision* needed for high-performance detection in complex models.
 
-**Methods**: Confusing context, synonyms, noise, nonsense, false premises
 
-**Result**: 0% hallucination rate (0/50)
-
-**Interpretation**: Modern models are **highly robust** to surface-level adversarial text. Geometry shifted (Δdensity=-0.15) but not enough to cross decision boundary.
 
 ---
 
